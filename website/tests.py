@@ -41,3 +41,35 @@ class AboutPageModelTest(TestCase):
     def test_str(self):
         about = AboutPage(mission_statement='Loving God')
         self.assertEqual(str(about), 'About Page')
+
+from django.urls import reverse
+
+
+class HomeViewTest(TestCase):
+    def test_returns_200(self):
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_uses_home_template(self):
+        response = self.client.get(reverse('website:home'))
+        self.assertTemplateUsed(response, 'website/home.html')
+
+
+class SermonListViewTest(TestCase):
+    def test_returns_200(self):
+        response = self.client.get(reverse('website:sermon_list'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_filter_by_topic(self):
+        from datetime import date
+        Sermon.objects.create(
+            title='Faith Talk', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc', topic='faith'
+        )
+        Sermon.objects.create(
+            title='Family Life', pastor='P', date=date(2025, 2, 1),
+            description='', youtube_url='https://youtube.com/watch?v=xyz', topic='family'
+        )
+        response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
+        self.assertEqual(len(response.context['sermons']), 1)
+        self.assertEqual(response.context['sermons'][0].title, 'Faith Talk')
