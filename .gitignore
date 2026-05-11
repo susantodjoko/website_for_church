@@ -1,0 +1,10 @@
+venv/
+db.sqlite3
+@"
+venv/
+db.sqlite3
+media/
+__pycache__/
+*.pyc
+.superpowers/
+"@ | Out-File -FilePath .gitignore -Encoding utf8
