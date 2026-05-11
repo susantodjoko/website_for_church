@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Plan Your Visit — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Plan Your Visit</h1>
+    <p class="page-header__sub">We'd love to have you join us this Sunday</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="service-grid">
+      {% for service in service_times %}
+      <div class="service-card {% if service.is_online %}service-card--online{% endif %}">
+        <h3 class="service-card__name">{{ service.campus_name }}</h3>
+        <p class="service-card__times">{{ service.times }}</p>
+        <p class="service-card__address">{{ service.address }}</p>
+        <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }}</a>
+      </div>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">Service information coming soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

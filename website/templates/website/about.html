@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}About — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">About Us</h1>
+    {% if about %}
+      <p class="page-header__sub">{{ about.mission_statement }}</p>
+    {% endif %}
+  </div>
+</header>
+
+{% if about %}
+<section class="section">
+  <div class="container">
+
+    <div class="about-pastor">
+      {% if about.pastor_photo %}
+        <img src="{{ about.pastor_photo.url }}" alt="{{ about.pastor_name }}" class="about-pastor__photo">
+      {% endif %}
+      <div>
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">
+          {{ about.pastor_name }}
+        </h2>
+        <p style="color: var(--color-text-muted); line-height: 1.8;">{{ about.pastor_bio }}</p>
+      </div>
+    </div>
+
+    <h2 class="section__title">Our Core Values</h2>
+    <div class="values-grid">
+      <div class="value-card">
+        <h3 class="value-card__title">{{ about.value_1_title }}</h3>
+        <p>{{ about.value_1_body }}</p>
+      </div>
+      <div class="value-card">
+        <h3 class="value-card__title">{{ about.value_2_title }}</h3>
+        <p>{{ about.value_2_body }}</p>
+      </div>
+      <div class="value-card">
+        <h3 class="value-card__title">{{ about.value_3_title }}</h3>
+        <p>{{ about.value_3_body }}</p>
+      </div>
+      <div class="value-card">
+        <h3 class="value-card__title">{{ about.value_4_title }}</h3>
+        <p>{{ about.value_4_body }}</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% else %}
+<section class="section">
+  <div class="container" style="text-align: center;">
+    <p style="color: var(--color-text-muted);">About page content coming soon.</p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

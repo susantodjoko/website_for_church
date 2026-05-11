@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Events — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Events</h1>
+    <p class="page-header__sub">Stay connected with what's happening at GKJ Salatiga</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="card-grid">
+      {% for event in events %}
+      <div class="card">
+        {% if event.image %}
+          <img src="{{ event.image.url }}" alt="{{ event.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ event.title }}</h3>
+          <p class="card__meta">
+            {{ event.date }} &middot; {{ event.time|time:"H:i" }} &middot; {{ event.location }}
+          </p>
+          <p class="card__text">{{ event.description }}</p>
+          {% if event.registration_url %}
+            <a href="{{ event.registration_url }}" class="btn btn--primary" target="_blank">Register</a>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">No upcoming events.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
