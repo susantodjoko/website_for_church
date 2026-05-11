@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GKJ Salatiga{% endblock %}</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="{% url 'website:home' %}" class="navbar__logo">GKJ Salatiga</a>
+
+      <button class="navbar__toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="navbar__links" id="navLinks">
+        <li><a href="{% url 'website:sermon_list' %}">Sermons</a></li>
+        <li><a href="{% url 'website:event_list' %}">Events</a></li>
+        <li><a href="{% url 'website:about' %}">About</a></li>
+        <li><a href="{% url 'website:visit' %}">Visit</a></li>
+      </ul>
+
+      <div class="navbar__actions">
+        {% if user.is_staff %}
+          <a href="{% url 'members:member_list' %}" class="btn btn--outline">Members</a>
+        {% else %}
+          <a href="/admin/login/?next=/members/" class="btn btn--outline">Staff Login</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__name">GKJ Salatiga</p>
+          <p class="footer__tagline">Gereja Kristen Jawa Salatiga</p>
+        </div>
+        <div class="footer__links">
+          <a href="{% url 'website:home' %}">Home</a>
+          <a href="{% url 'website:sermon_list' %}">Sermons</a>
+          <a href="{% url 'website:event_list' %}">Events</a>
+          <a href="{% url 'website:about' %}">About</a>
+          <a href="{% url 'website:visit' %}">Visit</a>
+        </div>
+      </div>
+      <p class="footer__copy">&copy; 2026 GKJ Salatiga. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
