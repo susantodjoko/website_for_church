@@ -1,0 +1,595 @@
+/* ===========================
+   DESIGN TOKENS
+   =========================== */
+:root {
+  --color-primary:      #1B4F8A;
+  --color-primary-dark: #153D6B;
+  --color-dark:         #1A1A1A;
+  --color-dark-2:       #2C2C2C;
+  --color-light:        #F7F7F5;
+  --color-white:        #FFFFFF;
+  --color-text:         #1A1A1A;
+  --color-text-muted:   #6B6B6B;
+  --color-border:       #E5E5E3;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --space-xs:  0.5rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2.5rem;
+  --space-xl:  4rem;
+  --space-2xl: 6rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+
+  --transition: 0.25s ease;
+  --nav-height: 70px;
+}
+
+/* ===========================
+   RESET & BASE
+   =========================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-white);
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+/* ===========================
+   LAYOUT
+   =========================== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+.section { padding: var(--space-2xl) 0; }
+.section--dark { background: var(--color-dark); color: var(--color-white); }
+.section--light { background: var(--color-light); }
+
+.section__title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+.section__cta {
+  text-align: center;
+  margin-top: var(--space-lg);
+}
+
+/* ===========================
+   BUTTONS
+   =========================== */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  border: 2px solid transparent;
+}
+
+.btn--primary { background: var(--color-primary); color: var(--color-white); }
+.btn--primary:hover { background: var(--color-primary-dark); }
+
+.btn--secondary {
+  background: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.btn--secondary:hover { background: var(--color-primary); color: var(--color-white); }
+
+.btn--outline { background: transparent; border-color: var(--color-primary); color: var(--color-primary); }
+.btn--outline:hover { background: var(--color-primary); color: var(--color-white); }
+
+.btn--outline-light { background: transparent; border-color: var(--color-white); color: var(--color-white); }
+.btn--outline-light:hover { background: var(--color-white); color: var(--color-dark); }
+
+/* ===========================
+   NAVBAR
+   =========================== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  z-index: 1000;
+  transition: background var(--transition), box-shadow var(--transition);
+}
+
+.navbar.scrolled {
+  background: var(--color-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: var(--space-md);
+}
+
+.navbar__logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-white);
+  flex-shrink: 0;
+}
+
+.navbar__links {
+  display: flex;
+  gap: var(--space-md);
+  margin-left: auto;
+}
+
+.navbar__links a {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color var(--transition);
+}
+.navbar__links a:hover { color: var(--color-white); }
+
+.navbar__actions { margin-left: var(--space-sm); }
+
+.navbar__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px;
+  margin-left: auto;
+}
+
+.navbar__toggle span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-white);
+}
+
+/* ===========================
+   HERO
+   =========================== */
+.hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero__bg--default {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-dark));
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  color: var(--color-white);
+  max-width: 700px;
+}
+
+.hero__headline {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: var(--space-md);
+}
+
+.hero__sub {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: var(--space-lg);
+  max-width: 500px;
+}
+
+.hero__ctas {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ===========================
+   CARDS
+   =========================== */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.card--ministry { background: var(--color-dark-2); color: var(--color-white); }
+
+.card__img { width: 100%; height: 200px; object-fit: cover; }
+
+.card__body {
+  padding: var(--space-md);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  margin-bottom: var(--space-xs);
+}
+.card--ministry .card__tag { color: rgba(255,255,255,0.6); }
+
+.card__title { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-xs); line-height: 1.3; }
+
+.card__meta { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: var(--space-xs); }
+.card--ministry .card__meta { color: rgba(255,255,255,0.6); }
+
+.card__text { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: var(--space-sm); flex: 1; }
+.card--ministry .card__text { color: rgba(255,255,255,0.75); }
+
+/* ===========================
+   SERVICE TIMES
+   =========================== */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+.service-card {
+  background: var(--color-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  text-align: center;
+  border-top: 4px solid var(--color-primary);
+}
+
+.service-card--online { border-top-color: #27ae60; }
+
+.service-card__name { font-size: 1.3rem; font-weight: 700; margin-bottom: var(--space-xs); }
+.service-card__times { font-size: 1rem; font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-xs); }
+.service-card__address { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-md); }
+
+/* ===========================
+   PAGE HEADER (inner pages)
+   =========================== */
+.page-header {
+  padding: calc(var(--nav-height) + var(--space-xl)) 0 var(--space-xl);
+  background: var(--color-dark);
+  color: var(--color-white);
+  text-align: center;
+}
+
+.page-header__title { font-size: 2.5rem; font-weight: 800; }
+.page-header__sub { font-size: 1.1rem; opacity: 0.75; margin-top: var(--space-xs); }
+
+/* ===========================
+   SERMON DETAIL
+   =========================== */
+.sermon-detail {
+  padding: calc(var(--nav-height) + var(--space-xl)) 0 var(--space-2xl);
+}
+
+.video-embed {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.video-embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}
+
+.sermon-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* ===========================
+   ABOUT PAGE
+   =========================== */
+.about-pastor {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-xl);
+  align-items: start;
+  margin-bottom: var(--space-2xl);
+}
+
+.about-pastor__photo {
+  border-radius: var(--radius-lg);
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 3/4;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.value-card {
+  background: var(--color-light);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--color-primary);
+}
+
+.value-card__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+  color: var(--color-primary);
+}
+
+/* ===========================
+   FILTER BAR (sermons page)
+   =========================== */
+.filter-bar {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+.filter-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: var(--color-white);
+  color: var(--color-text);
+  transition: var(--transition);
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+.footer {
+  background: var(--color-dark);
+  color: var(--color-white);
+  padding: var(--space-2xl) 0 var(--space-lg);
+}
+
+.footer__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+  margin-bottom: var(--space-lg);
+}
+
+.footer__name { font-size: 1.4rem; font-weight: 800; margin-bottom: var(--space-xs); }
+.footer__tagline { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
+
+.footer__links { display: flex; flex-direction: column; gap: var(--space-xs); }
+.footer__links a { color: rgba(255,255,255,0.75); font-size: 0.95rem; transition: color var(--transition); }
+.footer__links a:hover { color: var(--color-white); }
+
+.footer__copy {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: var(--space-md);
+}
+
+/* ===========================
+   MEMBERS AREA
+   =========================== */
+.members-layout {
+  padding: calc(var(--nav-height) + var(--space-lg)) 0 var(--space-2xl);
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.members-header h1 { font-size: 1.75rem; font-weight: 700; }
+
+.search-form { display: flex; gap: var(--space-xs); }
+
+.search-form input {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  min-width: 240px;
+  font-family: var(--font-sans);
+}
+
+.search-form input:focus { outline: none; border-color: var(--color-primary); }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table th {
+  background: var(--color-light);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.data-table tr:hover td { background: var(--color-light); }
+.data-table a { color: var(--color-primary); font-weight: 500; }
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge--warga      { background: #dbeafe; color: #1e40af; }
+.badge--simpatisan { background: #fef9c3; color: #854d0e; }
+.badge--meninggal  { background: #f3f4f6; color: #6b7280; }
+.badge--titipan    { background: #fce7f3; color: #9d174d; }
+.badge--luar-kota  { background: #dcfce7; color: #166534; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.pagination a,
+.pagination span {
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.pagination a:hover { background: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+.pagination .current { background: var(--color-primary); color: var(--color-white); border-color: var(--color-primary); }
+
+/* ===========================
+   MEMBER DETAIL
+   =========================== */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xs) var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.detail-item__label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.detail-item__value { font-size: 0.95rem; font-weight: 500; }
+
+.detail-section {
+  background: var(--color-light);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+}
+
+.detail-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 768px) {
+  .navbar__links { display: none; }
+
+  .navbar__links.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--nav-height);
+    left: 0; right: 0;
+    background: var(--color-dark);
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .navbar__actions { display: none; }
+  .navbar__toggle { display: flex; }
+
+  .hero__headline { font-size: 2.2rem; }
+  .about-pastor { grid-template-columns: 1fr; }
+  .values-grid { grid-template-columns: 1fr; }
+  .footer__inner { grid-template-columns: 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .card-grid { grid-template-columns: 1fr; }
+}
