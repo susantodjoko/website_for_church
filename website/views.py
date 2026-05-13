@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage
+from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News
 
 
 def home(request):
@@ -48,6 +48,9 @@ def visit(request):
     service_times = ServiceTime.objects.all()
     return render(request, 'website/visit.html', {'service_times': service_times})
 
+def news(request):
+    news_list = News.objects.filter(is_published=True).order_by('-date')
+    return render(request, 'website/news.html', {'news_list': news_list})
 
 def _extract_youtube_id(url):
     if 'youtube.com/watch?v=' in url:

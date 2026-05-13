@@ -26,15 +26,16 @@
         <li><a href="{% url 'website:event_list' %}">Events</a></li>
         <li><a href="{% url 'website:about' %}">About</a></li>
         <li><a href="{% url 'website:visit' %}">Visit</a></li>
+        <li><a href="{% url 'website:news' %}">News</a></li>
       </ul>
 
-      <div class="navbar__actions">
+      <!--<div class="navbar__actions">
         {% if user.is_staff %}
-          <a href="{% url 'members:member_list' %}" class="btn btn--outline">Members</a>
+          <a href="{% url 'members:member_list' %}" class="btn btn--outline">Members</a> 
         {% else %}
           <a href="/admin/login/?next=/members/" class="btn btn--outline">Staff Login</a>
         {% endif %}
-      </div>
+      </div> -->
     </div>
   </nav>
 
@@ -55,6 +56,15 @@
           <a href="{% url 'website:event_list' %}">Events</a>
           <a href="{% url 'website:about' %}">About</a>
           <a href="{% url 'website:visit' %}">Visit</a>
+          <a href="{% url 'website:news' %}">News</a>
+    
+          <div class="footer_links" </div><!--"navbar__actions"> -->
+        {% if user.is_staff %}
+          <a href="{% url 'members:member_list' %}" >Members</a>
+        {% else %}
+          <a href="/admin/login/?next=/members/" >Staff Login</a>
+        {% endif %}
+      </div>
         </div>
       </div>
       <p class="footer__copy">&copy; 2026 GKJ Salatiga. All rights reserved.</p>

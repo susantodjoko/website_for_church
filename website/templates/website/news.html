@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}News — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">News</h1>
+    <p class="page-header__sub">Stay connected with what's happening at GKJ Salatiga</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="card-grid">
+      {% for news in news_list %}
+      <div class="card">
+        {% if news.image %}
+          <img src="{{ news.image.url }}" alt="{{ news.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ news.title }}</h3>
+          <p class="card__meta">
+            {{ news.date }}
+          </p>
+          <p class="card__text">{{ news.content | truncatewords:30 }}</p>
+          {% if news.registration_url %}
+            <a href="{{ news.registration_url }}" class="btn btn--primary" target="_blank">Register</a>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">No upcoming News.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

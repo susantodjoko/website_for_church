@@ -113,3 +113,17 @@ class AboutPage(models.Model):
 
     def __str__(self):
         return 'About Page'
+    
+class News(models.Model):
+    title = models.CharField(max_length=200)
+    date = models.DateField()
+    content = models.TextField()
+    image = models.ImageField(upload_to='news/', blank=True)
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'News'
+
+    def __str__(self):
+        return self.title
