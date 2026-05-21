@@ -48,7 +48,7 @@
           {% if sermon.topic %}<p class="card__tag">{{ sermon.get_topic_display }}</p>{% endif %}
           <h3 class="card__title">{{ sermon.title }}</h3>
           <p class="card__meta">{{ sermon.pastor }} &middot; {{ sermon.date }}</p>
-          <p class="card__text">{{ sermon.description|truncatewords:20 }}</p>
+          <p class="card__text">{{ sermon.description|striptags|truncatewords:20 }}</p>
         </div>
       </a>
       {% endfor %}
@@ -115,7 +115,7 @@
         <div class="card__body">
           <h3 class="card__title">{{ event.title }}</h3>
           <p class="card__meta">{{ event.date }} &middot; {{ event.time|time:"H:i" }} &middot; {{ event.location }}</p>
-          <p class="card__text">{{ event.description|truncatewords:20 }}</p>
+          <p class="card__text">{{ event.description|striptags|truncatewords:20 }}</p>
           {% if event.registration_url %}
             <a href="{{ event.registration_url }}" class="btn btn--secondary" target="_blank">Register</a>
           {% endif %}
@@ -129,5 +129,31 @@
   </div>
 </section>
 {% endif %}
+{% if latest_news %}
+<section class="section section--light">
+  <div class="container">
+    <h2 class="section__title">Latest News</h2>
+    <div class="card-grid">
+      {% for item in latest_news %}
+      <div class="card">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ item.title }}</h3>
+          <p class="card__meta">{{ item.date }}</p>
+          <p class="card__text">{{ item.content|striptags|truncatewords:20 }}</p>
+          <a href="{% url 'website:news_detail' item.pk %}" class="btn btn--secondary">Read More</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="section__cta">
+      <a href="{% url 'website:news' %}" class="btn btn--secondary">View All News</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 
 {% endblock %}

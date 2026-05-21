@@ -8,12 +8,14 @@ def home(request):
     ministries = Ministry.objects.all()[:6]
     service_times = ServiceTime.objects.all()
     upcoming_events = Event.objects.filter(is_published=True)[:3]
+    latest_news = News.objects.filter(is_published=True)[:3]
     return render(request, 'website/home.html', {
         'hero': hero,
         'featured_sermons': featured_sermons,
         'ministries': ministries,
         'service_times': service_times,
         'upcoming_events': upcoming_events,
+        'latest_news': latest_news,
     })
 
 
