@@ -22,20 +22,20 @@
       </button>
 
       <ul class="navbar__links" id="navLinks">
-        <li><a href="{% url 'website:sermon_list' %}">Sermons</a></li>
-        <li><a href="{% url 'website:event_list' %}">Events</a></li>
-        <li><a href="{% url 'website:about' %}">About</a></li>
-        <li><a href="{% url 'website:visit' %}">Visit</a></li>
-        <li><a href="{% url 'website:news' %}">News</a></li>
-      </ul>
+  <li><a href="{% url 'website:sermon_list' %}"
+     class="{% if request.resolver_match.url_name == 'sermon_list' or request.resolver_match.url_name == 'sermon_detail' %}active{% endif %}">Sermons</a></li>
+  <li><a href="{% url 'website:event_list' %}"
+     class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">Events</a></li>
+  <li><a href="{% url 'website:about' %}"
+     class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
+  <li><a href="{% url 'website:visit' %}"
+     class="{% if request.resolver_match.url_name == 'visit' %}active{% endif %}">Visit</a></li>
+  <li><a href="{% url 'website:news' %}"
+     class="{% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'news_detail' %}active{% endif %}">News</a></li>
+  <li><a href="{% url 'website:liturgi' %}"
+     class="{% if request.resolver_match.url_name == 'liturgi' %}active{% endif %}">Liturgi</a></li>
+</ul>
 
-      <!--<div class="navbar__actions">
-        {% if user.is_staff %}
-          <a href="{% url 'members:member_list' %}" class="btn btn--outline">Members</a> 
-        {% else %}
-          <a href="/admin/login/?next=/members/" class="btn btn--outline">Staff Login</a>
-        {% endif %}
-      </div> -->
     </div>
   </nav>
 

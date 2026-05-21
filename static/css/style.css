@@ -152,6 +152,11 @@ ul { list-style: none; }
   transition: color var(--transition);
 }
 .navbar__links a:hover { color: var(--color-white); }
+.navbar__links a.active {
+  color: var(--color-white);
+  border-bottom: 2px solid var(--color-white);
+  padding-bottom: 2px;
+}
 
 .navbar__actions { margin-left: var(--space-sm); }
 
