@@ -273,6 +273,19 @@ ul { list-style: none; }
   color: var(--color-primary);
   margin-bottom: var(--space-xs);
 }
+
+.tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  padding: 0.2em 0.6em;
+  border-radius: 4px;
+  margin-bottom: var(--space-xs);
+}
 .card--ministry .card__tag { color: rgba(255,255,255,0.6); }
 
 .card__title { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-xs); line-height: 1.3; }

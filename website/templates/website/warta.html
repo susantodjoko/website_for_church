@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Warta Jemaat — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Warta Jemaat</h1>
+    <p class="page-header__sub">Berita, pengumuman, dan warta mingguan GKJ Salatiga</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+
+    <form method="get" class="search-form" style="margin-bottom: 1.5rem;">
+      <input type="text" name="q" value="{{ query }}" placeholder="Cari warta...">
+      {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+      <button type="submit" class="btn btn--primary">Search</button>
+    </form>
+
+    <div class="filter-bar" style="margin-bottom: 2rem;">
+      <a href="?{% if query %}q={{ query }}&{% endif %}"
+         class="btn {% if not category %}btn--primary{% else %}btn--outline{% endif %}">Semua</a>
+      {% for value, label in categories %}
+      <a href="?category={{ value }}{% if query %}&q={{ query }}{% endif %}"
+         class="btn {% if category == value %}btn--primary{% else %}btn--outline{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="card-grid">
+      {% for item in page %}
+      <div class="card">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <span class="tag">{{ item.get_category_display }}</span>
+          <h3 class="card__title">{{ item.title }}</h3>
+          <p class="card__meta">{{ item.date }}</p>
+          {% if item.content %}
+            <p class="card__text">{{ item.content|striptags|truncatewords:25 }}</p>
+          {% endif %}
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+            <a href="{% url 'website:warta_detail' item.pk %}" class="btn btn--secondary">Baca Selengkapnya</a>
+            {% if item.pdf_file %}
+              <a href="{{ item.pdf_file.url }}" class="btn btn--outline" target="_blank">Download PDF</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">Tidak ada warta ditemukan.</p>
+      {% endfor %}
+    </div>
+
+    <div class="pagination">
+      {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">&laquo; Prev</a>
+      {% endif %}
+      <span class="current">{{ page.number }} of {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">Next &raquo;</a>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+{% endblock %}

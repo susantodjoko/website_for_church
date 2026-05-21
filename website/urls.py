@@ -16,4 +16,6 @@ urlpatterns = [
     path('liturgi/<int:pk>/', views.liturgi_detail, name='liturgi_detail'),
     path('series/', views.series_list, name='series_list'),
     path('series/<int:pk>/', views.series_detail, name='series_detail'),
+    path('warta/', views.warta_list, name='warta_list'),
+    path('warta/<int:pk>/', views.warta_detail, name='warta_detail'),
 ]

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}{{ warta.title }} — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="sermon-detail">
+  <div class="container" style="max-width: 820px;">
+
+    {% if warta.image %}
+      <img src="{{ warta.image.url }}" alt="{{ warta.title }}"
+           style="width: 100%; border-radius: 8px; margin-bottom: 2rem; object-fit: cover; max-height: 400px;">
+    {% endif %}
+
+    <p class="card__meta" style="margin-bottom: 0.5rem;">
+      <span class="tag">{{ warta.get_category_display }}</span>
+      &nbsp;{{ warta.date }}
+    </p>
+
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem; line-height: 1.2;">
+      {{ warta.title }}
+    </h1>
+
+    {% if warta.content %}
+      <div style="line-height: 1.9; color: var(--color-text);">
+        {{ warta.content|safe }}
+      </div>
+    {% endif %}
+
+    {% if warta.pdf_file %}
+      <div style="margin-top: 2rem; padding: 1.5rem; background: var(--color-surface); border-radius: 8px;">
+        <p style="margin-bottom: 0.75rem; font-weight: 600;">File PDF tersedia:</p>
+        <a href="{{ warta.pdf_file.url }}" class="btn btn--primary" target="_blank">Download PDF</a>
+      </div>
+    {% endif %}
+
+    <div style="margin-top: 2rem;">
+      <a href="{% url 'website:warta_list' %}" class="btn btn--outline">&larr; Kembali ke Warta</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

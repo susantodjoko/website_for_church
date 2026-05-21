@@ -127,3 +127,41 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+class Liturgi(models.Model):
+    title = models.CharField(max_length=200)
+    date = models.DateField()
+    content = models.TextField()
+    image = models.ImageField(upload_to='liturgi/', blank=True)
+    is_published = models.BooleanField(default=True)
+    is_liturgi = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'Liturgi'
+
+    def __str__(self):
+        return self.title
+
+
+class WartaJemaat(models.Model):
+    CATEGORY_CHOICES = [
+        ('warta', 'Warta Mingguan'),
+        ('berita', 'Berita Jemaat'),
+        ('pengumuman', 'Pengumuman'),
+    ]
+
+    title = models.CharField(max_length=200)
+    date = models.DateField()
+    content = models.TextField(blank=True)
+    image = models.ImageField(upload_to='warta/', blank=True)
+    pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta')
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'Warta Jemaat'
+
+    def __str__(self):
+        return f'{self.get_category_display()} — {self.title}'

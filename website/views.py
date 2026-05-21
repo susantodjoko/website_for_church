@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi, SermonSeries
+from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi, SermonSeries, WartaJemaat
 from django.core.paginator import Paginator
 
 def home(request):
@@ -8,7 +8,7 @@ def home(request):
     ministries = Ministry.objects.all()[:6]
     service_times = ServiceTime.objects.all()
     upcoming_events = Event.objects.filter(is_published=True)[:3]
-    latest_news = News.objects.filter(is_published=True)[:3]
+    latest_news = WartaJemaat.objects.filter(is_published=True)[:3]
     return render(request, 'website/home.html', {
         'hero': hero,
         'featured_sermons': featured_sermons,
@@ -50,6 +50,7 @@ def visit(request):
     service_times = ServiceTime.objects.all()
     return render(request, 'website/visit.html', {'service_times': service_times})
 
+
 def news(request):
     query = request.GET.get('q', '')
     news_list = News.objects.filter(is_published=True)
@@ -58,6 +59,7 @@ def news(request):
     paginator = Paginator(news_list, 6)
     page = paginator.get_page(request.GET.get('page'))
     return render(request, 'website/news.html', {'page': page, 'query': query})
+
 
 def news_detail(request, pk):
     news = get_object_or_404(News, pk=pk)
@@ -70,6 +72,7 @@ def _extract_youtube_id(url):
     if 'youtu.be/' in url:
         return url.split('youtu.be/')[1].split('?')[0]
     return ''
+
 
 def liturgi(request):
     query = request.GET.get('q', '')
@@ -99,3 +102,25 @@ def series_detail(request, pk):
         'sermons': sermons,
     })
 
+
+def warta_list(request):
+    query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
+    warta_qs = WartaJemaat.objects.filter(is_published=True)
+    if query:
+        warta_qs = warta_qs.filter(title__icontains=query)
+    if category:
+        warta_qs = warta_qs.filter(category=category)
+    paginator = Paginator(warta_qs, 9)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'website/warta.html', {
+        'page': page,
+        'query': query,
+        'category': category,
+        'categories': WartaJemaat.CATEGORY_CHOICES,
+    })
+
+
+def warta_detail(request, pk):
+    warta = get_object_or_404(WartaJemaat, pk=pk)
+    return render(request, 'website/warta_detail.html', {'warta': warta})

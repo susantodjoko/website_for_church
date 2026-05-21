@@ -30,10 +30,10 @@
      class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
   <li><a href="{% url 'website:visit' %}"
      class="{% if request.resolver_match.url_name == 'visit' %}active{% endif %}">Visit</a></li>
-  <li><a href="{% url 'website:news' %}"
-     class="{% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'news_detail' %}active{% endif %}">News</a></li>
+  <li><a href="{% url 'website:warta_list' %}"
+     class="{% if request.resolver_match.url_name == 'warta_list' or request.resolver_match.url_name == 'warta_detail' %}active{% endif %}">Warta</a></li>
   <li><a href="{% url 'website:liturgi' %}"
-     class="{% if request.resolver_match.url_name == 'liturgi' %}active{% endif %}">Liturgi</a></li>
+     class="{% if request.resolver_match.url_name == 'liturgi' or request.resolver_match.url_name == 'liturgi_detail' %}active{% endif %}">Liturgi</a></li>
 <li><a href="{% url 'website:series_list' %}"
    class="{% if request.resolver_match.url_name == 'series_list' or request.resolver_match.url_name == 'series_detail' %}active{% endif %}">Series</a></li>
 
@@ -59,7 +59,7 @@
           <a href="{% url 'website:event_list' %}">Events</a>
           <a href="{% url 'website:about' %}">About</a>
           <a href="{% url 'website:visit' %}">Visit</a>
-          <a href="{% url 'website:news' %}">News</a>
+          <a href="{% url 'website:warta_list' %}">Warta</a>
     
           <div class="footer_links" </div><!--"navbar__actions"> -->
         {% if user.is_staff %}
