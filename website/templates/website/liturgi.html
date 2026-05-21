@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}News — GKJ Salatiga{% endblock %}
+{% block title %}Liturgi — GKJ Salatiga{% endblock %}
 
 {% block content %}
 <header class="page-header">
   <div class="container">
-    <h1 class="page-header__title">News</h1>
-    <p class="page-header__sub">Stay connected with what's happening at GKJ Salatiga</p>
+    <h1 class="page-header__title">Liturgi</h1>
+    <p class="page-header__sub">Tata ibadah GKJ Salatiga</p>
   </div>
 </header>
 
@@ -13,7 +13,7 @@
   <div class="container">
 
     <form method="get" class="search-form" style="margin-bottom: 1.5rem;">
-      <input type="text" name="q" value="{{ query }}" placeholder="Search news...">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search liturgi...">
       <button type="submit" class="btn btn--primary">Search</button>
     </form>
 
@@ -27,11 +27,11 @@
           <h3 class="card__title">{{ item.title }}</h3>
           <p class="card__meta">{{ item.date }}</p>
           <p class="card__text">{{ item.content|striptags|truncatewords:25 }}</p>
-          <a href="{% url 'website:news_detail' item.pk %}" class="btn btn--secondary">Read More</a>
+          <a href="{% url 'website:liturgi_detail' item.pk %}" class="btn btn--secondary">Read More</a>
         </div>
       </div>
       {% empty %}
-      <p style="color: var(--color-text-muted);">No news at the moment.</p>
+      <p style="color: var(--color-text-muted);">No liturgi found.</p>
       {% endfor %}
     </div>
 

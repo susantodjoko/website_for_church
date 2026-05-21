@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News
-
+from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi
+from django.core.paginator import Paginator
 
 def home(request):
     hero = HeroSlide.objects.filter(is_active=True).first()
@@ -49,8 +49,18 @@ def visit(request):
     return render(request, 'website/visit.html', {'service_times': service_times})
 
 def news(request):
-    news_list = News.objects.filter(is_published=True).order_by('-date')
-    return render(request, 'website/news.html', {'news_list': news_list})
+    query = request.GET.get('q', '')
+    news_list = News.objects.filter(is_published=True)
+    if query:
+        news_list = news_list.filter(title__icontains=query)
+    paginator = Paginator(news_list, 6)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'website/news.html', {'page': page, 'query': query})
+
+def news_detail(request, pk):
+    news = get_object_or_404(News, pk=pk)
+    return render(request, 'website/news_detail.html', {'news': news})
+
 
 def _extract_youtube_id(url):
     if 'youtube.com/watch?v=' in url:
@@ -58,3 +68,20 @@ def _extract_youtube_id(url):
     if 'youtu.be/' in url:
         return url.split('youtu.be/')[1].split('?')[0]
     return ''
+
+def liturgi(request):
+    liturgi_list = Liturgi.objects.filter(is_published=True, is_liturgi=True).order_by('-date')
+    return render(request, 'website/liturgi.html', {'liturgi_list': liturgi_list})
+
+def liturgi_detail(request, pk):
+    liturgi = get_object_or_404(Liturgi, pk=pk)
+    return render(request, 'website/liturgi_detail.html', {'liturgi': liturgi})
+
+def liturgi_list(request):
+    query = request.GET.get('q', '')
+    liturgi_list = Liturgi.objects.filter(is_published=True)
+    if query:
+        liturgi_list = liturgi_list.filter(title__icontains=query)
+    paginator = Paginator(liturgi_list, 6)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'website/liturgi.html', {'page': page, 'query': query})
