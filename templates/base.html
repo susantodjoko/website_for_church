@@ -34,7 +34,10 @@
      class="{% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'news_detail' %}active{% endif %}">News</a></li>
   <li><a href="{% url 'website:liturgi' %}"
      class="{% if request.resolver_match.url_name == 'liturgi' %}active{% endif %}">Liturgi</a></li>
-</ul>
+<li><a href="{% url 'website:series_list' %}"
+   class="{% if request.resolver_match.url_name == 'series_list' or request.resolver_match.url_name == 'series_detail' %}active{% endif %}">Series</a></li>
+
+    </ul>
 
     </div>
   </nav>

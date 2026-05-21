@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Sermon Series — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Sermon Series</h1>
+    <p class="page-header__sub">Browse sermons by series</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="card-grid">
+      {% for s in series %}
+      <a href="{% url 'website:series_detail' s.pk %}" class="card">
+        {% if s.thumbnail %}
+          <img src="{{ s.thumbnail.url }}" alt="{{ s.name }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ s.name }}</h3>
+          <p class="card__meta">{{ s.sermon_set.count }} sermons</p>
+          <p class="card__text">{{ s.description|truncatewords:20 }}</p>
+        </div>
+      </a>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">No series yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

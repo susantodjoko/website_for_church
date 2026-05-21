@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}{{ series.name }} — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">{{ series.name }}</h1>
+    <p class="page-header__sub">{{ series.description }}</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="card-grid">
+      {% for sermon in sermons %}
+      <a href="{% url 'website:sermon_detail' sermon.pk %}" class="card">
+        {% if sermon.thumbnail %}
+          <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ sermon.title }}</h3>
+          <p class="card__meta">{{ sermon.pastor }} &middot; {{ sermon.date }}</p>
+          <p class="card__text">{{ sermon.description|striptags|truncatewords:20 }}</p>
+        </div>
+      </a>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">No sermons in this series yet.</p>
+      {% endfor %}
+    </div>
+    <div style="margin-top: 2rem;">
+      <a href="{% url 'website:sermon_list' %}" class="btn btn--outline">&larr; All Sermons</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

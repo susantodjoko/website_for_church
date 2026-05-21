@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi
+from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi, SermonSeries
 from django.core.paginator import Paginator
 
 def home(request):
@@ -72,18 +72,30 @@ def _extract_youtube_id(url):
     return ''
 
 def liturgi(request):
-    liturgi_list = Liturgi.objects.filter(is_published=True, is_liturgi=True).order_by('-date')
-    return render(request, 'website/liturgi.html', {'liturgi_list': liturgi_list})
+    query = request.GET.get('q', '')
+    liturgi_qs = Liturgi.objects.filter(is_published=True)
+    if query:
+        liturgi_qs = liturgi_qs.filter(title__icontains=query)
+    paginator = Paginator(liturgi_qs, 6)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'website/liturgi.html', {'page': page, 'query': query})
+
 
 def liturgi_detail(request, pk):
     liturgi = get_object_or_404(Liturgi, pk=pk)
     return render(request, 'website/liturgi_detail.html', {'liturgi': liturgi})
 
-def liturgi_list(request):
-    query = request.GET.get('q', '')
-    liturgi_list = Liturgi.objects.filter(is_published=True)
-    if query:
-        liturgi_list = liturgi_list.filter(title__icontains=query)
-    paginator = Paginator(liturgi_list, 6)
-    page = paginator.get_page(request.GET.get('page'))
-    return render(request, 'website/liturgi.html', {'page': page, 'query': query})
+
+def series_list(request):
+    series = SermonSeries.objects.all()
+    return render(request, 'website/series_list.html', {'series': series})
+
+
+def series_detail(request, pk):
+    series = get_object_or_404(SermonSeries, pk=pk)
+    sermons = Sermon.objects.filter(series=series)
+    return render(request, 'website/series_detail.html', {
+        'series': series,
+        'sermons': sermons,
+    })
+
