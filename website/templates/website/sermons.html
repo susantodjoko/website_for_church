@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Sermons — GKJ Salatiga{% endblock %}
+{% block title %}Kotbah — GKJ Salatiga{% endblock %}
 
 {% block content %}
 <header class="page-header">
   <div class="container">
-    <h1 class="page-header__title">Messages</h1>
-    <p class="page-header__sub">Watch and listen to our latest sermons</p>
+    <h1 class="page-header__title">Kotbah</h1>
+    <p class="page-header__sub">Tonton dan dengarkan kotbah terbaru kami</p>
   </div>
 </header>
 
@@ -13,20 +13,20 @@
   <div class="container">
     <div class="filter-bar">
       <a href="{% url 'website:sermon_list' %}"
-         class="filter-btn {% if not topic %}active{% endif %}">All</a>
+         class="filter-btn {% if not topic %}active{% endif %}">Semua</a>
       <a href="?topic=faith"
-         class="filter-btn {% if topic == 'faith' %}active{% endif %}">Faith</a>
+         class="filter-btn {% if topic == 'faith' %}active{% endif %}">Iman</a>
       <a href="?topic=family"
-         class="filter-btn {% if topic == 'family' %}active{% endif %}">Family</a>
+         class="filter-btn {% if topic == 'family' %}active{% endif %}">Keluarga</a>
       <a href="?topic=purpose"
-         class="filter-btn {% if topic == 'purpose' %}active{% endif %}">Purpose</a>
+         class="filter-btn {% if topic == 'purpose' %}active{% endif %}">Tujuan</a>
       <a href="?topic=prayer"
-         class="filter-btn {% if topic == 'prayer' %}active{% endif %}">Prayer</a>
+         class="filter-btn {% if topic == 'prayer' %}active{% endif %}">Doa</a>
     </div>
 
     <div class="card-grid">
       {% for sermon in sermons %}
-      <a href="{% url 'website:sermon_detail' sermon.pk %}" class="card">
+      <a href="{% url 'website:sermon_detail' sermon.slug %}" class="card">
         {% if sermon.thumbnail %}
           <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="card__img">
         {% endif %}
@@ -34,7 +34,7 @@
           {% if sermon.topic %}<p class="card__tag">{{ sermon.get_topic_display }}</p>{% endif %}
           <h3 class="card__title">{{ sermon.title }}</h3>
           <p class="card__meta">{{ sermon.pastor }} &middot; {{ sermon.date }}</p>
-          <p class="card__text">{{ sermon.description|truncatewords:20 }}</p>
+          <p class="card__text">{{ sermon.description|striptags|truncatewords:20 }}</p>
         </div>
       </a>
       {% empty %}

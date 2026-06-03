@@ -1,6 +1,10 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, News, Liturgi, SermonSeries, WartaJemaat
+from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
 from django.core.paginator import Paginator
+from .forms import ContactForm
+from datetime import date, timedelta
+from members.models import Member
+
 
 def home(request):
     hero = HeroSlide.objects.filter(is_active=True).first()
@@ -9,6 +13,16 @@ def home(request):
     service_times = ServiceTime.objects.all()
     upcoming_events = Event.objects.filter(is_published=True)[:3]
     latest_news = WartaJemaat.objects.filter(is_published=True)[:3]
+    
+    today = date.today()
+    week_dates = [today + timedelta(days=i) for i in range(7)]
+    birthdays = []
+    for d in week_dates:
+        for m in Member.objects.filter(
+            tanggal_lahir__month=d.month,
+            tanggal_lahir__day=d.day,
+        ).exclude(kewargaan='Meninggal'):
+            birthdays.append({'member': m, 'date': d, 'is_today': d == today})
     return render(request, 'website/home.html', {
         'hero': hero,
         'featured_sermons': featured_sermons,
@@ -16,6 +30,7 @@ def home(request):
         'service_times': service_times,
         'upcoming_events': upcoming_events,
         'latest_news': latest_news,
+        'birthdays': birthdays,
     })
 
 
@@ -27,8 +42,8 @@ def sermon_list(request):
     return render(request, 'website/sermons.html', {'sermons': sermons, 'topic': topic})
 
 
-def sermon_detail(request, pk):
-    sermon = get_object_or_404(Sermon, pk=pk)
+def sermon_detail(request, slug):
+    sermon = get_object_or_404(Sermon, slug=slug)
     video_id = _extract_youtube_id(sermon.youtube_url)
     return render(request, 'website/sermon_detail.html', {
         'sermon': sermon,
@@ -51,20 +66,6 @@ def visit(request):
     return render(request, 'website/visit.html', {'service_times': service_times})
 
 
-def news(request):
-    query = request.GET.get('q', '')
-    news_list = News.objects.filter(is_published=True)
-    if query:
-        news_list = news_list.filter(title__icontains=query)
-    paginator = Paginator(news_list, 6)
-    page = paginator.get_page(request.GET.get('page'))
-    return render(request, 'website/news.html', {'page': page, 'query': query})
-
-
-def news_detail(request, pk):
-    news = get_object_or_404(News, pk=pk)
-    return render(request, 'website/news_detail.html', {'news': news})
-
 
 def _extract_youtube_id(url):
     if 'youtube.com/watch?v=' in url:
@@ -73,20 +74,6 @@ def _extract_youtube_id(url):
         return url.split('youtu.be/')[1].split('?')[0]
     return ''
 
-
-def liturgi(request):
-    query = request.GET.get('q', '')
-    liturgi_qs = Liturgi.objects.filter(is_published=True)
-    if query:
-        liturgi_qs = liturgi_qs.filter(title__icontains=query)
-    paginator = Paginator(liturgi_qs, 6)
-    page = paginator.get_page(request.GET.get('page'))
-    return render(request, 'website/liturgi.html', {'page': page, 'query': query})
-
-
-def liturgi_detail(request, pk):
-    liturgi = get_object_or_404(Liturgi, pk=pk)
-    return render(request, 'website/liturgi_detail.html', {'liturgi': liturgi})
 
 
 def series_list(request):
@@ -121,6 +108,29 @@ def warta_list(request):
     })
 
 
-def warta_detail(request, pk):
-    warta = get_object_or_404(WartaJemaat, pk=pk)
+def warta_detail(request, slug):
+    warta = get_object_or_404(WartaJemaat, slug=slug)
     return render(request, 'website/warta_detail.html', {'warta': warta})
+
+def gallery(request):
+    albums = Album.objects.filter(is_published=True)
+    return render(request, 'website/gallery.html', {'albums': albums})
+
+
+def album_detail(request, slug):
+    album = get_object_or_404(Album, slug=slug)
+    photos = album.photos.all()
+    return render(request, 'website/album_detail.html', {
+        'album': album,
+        'photos': photos,
+    })
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return render(request, 'website/contact.html', {'form': form, 'sent': True})
+    else:
+        form = ContactForm()
+    return render(request, 'website/contact.html', {'form': form, 'sent': False})

@@ -13,7 +13,7 @@
   <div class="container">
     <div class="card-grid">
       {% for sermon in sermons %}
-      <a href="{% url 'website:sermon_detail' sermon.pk %}" class="card">
+      <a href="{% url 'website:sermon_detail' sermon.slug %}" class="card">
         {% if sermon.thumbnail %}
           <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="card__img">
         {% endif %}

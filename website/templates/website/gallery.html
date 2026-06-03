@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Gallery — GKJ Salatiga{% endblock %}
+{% block meta_description %}Galeri foto kegiatan dan momen jemaat GKJ Salatiga.{% endblock %}
+{% block og_title %}Gallery — GKJ Salatiga{% endblock %}
+{% block og_description %}Galeri foto kegiatan dan momen jemaat GKJ Salatiga.{% endblock %}
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Gallery</h1>
+    <p class="page-header__sub">Momen dan kenangan bersama jemaat GKJ Salatiga</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="card-grid">
+      {% for album in albums %}
+      <a href="{% url 'website:album_detail' album.slug %}" class="card">
+        {% if album.cover_image %}
+          <img src="{{ album.cover_image.url }}" alt="{{ album.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <h3 class="card__title">{{ album.title }}</h3>
+          <p class="card__meta">{{ album.date }} &middot; {{ album.photos.count }} foto</p>
+        </div>
+      </a>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">Belum ada album.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

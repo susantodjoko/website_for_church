@@ -15,7 +15,7 @@
     <form method="get" class="search-form" style="margin-bottom: 1.5rem;">
       <input type="text" name="q" value="{{ query }}" placeholder="Cari warta...">
       {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
-      <button type="submit" class="btn btn--primary">Search</button>
+      <button type="submit" class="btn btn--primary">Telusuri</button>
     </form>
 
     <div class="filter-bar" style="margin-bottom: 2rem;">
@@ -41,7 +41,7 @@
             <p class="card__text">{{ item.content|striptags|truncatewords:25 }}</p>
           {% endif %}
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
-            <a href="{% url 'website:warta_detail' item.pk %}" class="btn btn--secondary">Baca Selengkapnya</a>
+            <a href="{% url 'website:warta_detail' item.slug %}" class="btn btn--secondary">Baca Selengkapnya</a>
             {% if item.pdf_file %}
               <a href="{{ item.pdf_file.url }}" class="btn btn--outline" target="_blank">Download PDF</a>
             {% endif %}

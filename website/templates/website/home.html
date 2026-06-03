@@ -2,7 +2,25 @@
 {% load static %}
 {% block title %}GKJ Salatiga — Welcome{% endblock %}
 
-{% block content %}
+{% block content %}{% for service in service_times %}
+{% if service.is_live_now and service.youtube_live_url %}
+<section class="section section--dark" style="padding: 2rem 0;">
+  <div class="container">
+    <h2 class="section__title" style="color: var(--color-white); margin-bottom: 1rem;">
+      🔴 Live Sekarang — Ibadah Minggu
+    </h2>
+    <div class="video-embed">
+      <iframe src="{{ service.youtube_live_url }}"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endfor %}
+
+
 
 <!-- HERO SECTION -->
 <section class="hero">
@@ -14,10 +32,10 @@
   <div class="hero__overlay"></div>
   <div class="container hero__content">
     <h1 class="hero__headline">
-      {% if hero %}{{ hero.headline }}{% else %}Welcome to GKJ Salatiga{% endif %}
+      {% if hero %}{{ hero.headline }}{% else %}Selamat Datang di GKJ Salatiga{% endif %}
     </h1>
     <p class="hero__sub">
-      {% if hero %}{{ hero.subheadline }}{% else %}A community of faith, hope, and love.{% endif %}
+      {% if hero %}{{ hero.subheadline }}{% else %}Komunitas iman, harapan, dan kasih.{% endif %}
     </p>
     <div class="hero__ctas">
       {% if hero %}
@@ -26,8 +44,8 @@
           <a href="{{ hero.cta_secondary_url }}" class="btn btn--outline-light">{{ hero.cta_secondary_text }}</a>
         {% endif %}
       {% else %}
-        <a href="{% url 'website:visit' %}" class="btn btn--primary">Plan Your Visit</a>
-        <a href="{% url 'website:sermon_list' %}" class="btn btn--outline-light">Watch Sermons</a>
+        <a href="{% url 'website:visit' %}" class="btn btn--primary">Rencanakan Kunjungan Anda</a>
+        <a href="{% url 'website:sermon_list' %}" class="btn btn--outline-light">Tonton Khotbah</a>
       {% endif %}
     </div>
   </div>
@@ -37,10 +55,10 @@
 {% if featured_sermons %}
 <section class="section">
   <div class="container">
-    <h2 class="section__title">Latest Messages</h2>
+    <h2 class="section__title">Khotbah Terbaru</h2>
     <div class="card-grid">
       {% for sermon in featured_sermons %}
-      <a href="{% url 'website:sermon_detail' sermon.pk %}" class="card">
+      <a href="{% url 'website:sermon_detail' sermon.slug %}" class="card">
         {% if sermon.thumbnail %}
           <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="card__img">
         {% endif %}
@@ -54,7 +72,7 @@
       {% endfor %}
     </div>
     <div class="section__cta">
-      <a href="{% url 'website:sermon_list' %}" class="btn btn--secondary">View All Sermons</a>
+      <a href="{% url 'website:sermon_list' %}" class="btn btn--secondary">Lihat Semua Khotbah</a>
     </div>
   </div>
 </section>
@@ -64,7 +82,7 @@
 {% if ministries %}
 <section class="section section--dark">
   <div class="container">
-    <h2 class="section__title">Our Ministries</h2>
+    <h2 class="section__title">Pelayanan Kami</h2>
     <div class="card-grid">
       {% for ministry in ministries %}
       <div class="card card--ministry">
@@ -86,7 +104,7 @@
 {% if service_times %}
 <section class="section">
   <div class="container">
-    <h2 class="section__title">Join Us This Sunday</h2>
+    <h2 class="section__title">Bergabunglah Dengan Kami</h2>
     <div class="service-grid">
       {% for service in service_times %}
       <div class="service-card {% if service.is_online %}service-card--online{% endif %}">
@@ -105,7 +123,7 @@
 {% if upcoming_events %}
 <section class="section section--light">
   <div class="container">
-    <h2 class="section__title">Upcoming Events</h2>
+    <h2 class="section__title">Kegiatan Mendatang</h2>
     <div class="card-grid">
       {% for event in upcoming_events %}
       <div class="card">
@@ -124,7 +142,7 @@
       {% endfor %}
     </div>
     <div class="section__cta">
-      <a href="{% url 'website:event_list' %}" class="btn btn--secondary">View All Events</a>
+      <a href="{% url 'website:event_list' %}" class="btn btn--secondary">Lihat Semua Kegiatan</a>
     </div>
   </div>
 </section>
@@ -146,13 +164,35 @@
           {% if item.content %}
             <p class="card__text">{{ item.content|striptags|truncatewords:20 }}</p>
           {% endif %}
-          <a href="{% url 'website:warta_detail' item.pk %}" class="btn btn--secondary">Baca Selengkapnya</a>
+          <a href="{% url 'website:warta_detail' item.slug %}" class="btn btn--secondary">Baca Selengkapnya</a>
         </div>
       </div>
       {% endfor %}
     </div>
     <div class="section__cta">
       <a href="{% url 'website:warta_list' %}" class="btn btn--secondary">Lihat Semua Warta</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if birthdays %}
+<section class="section section--light">
+  <div class="container">
+    <h2 class="section__title">🎂 Ulang Tahun Minggu Ini</h2>
+    <div class="birthday-grid">
+      {% for item in birthdays %}
+      <div class="birthday-card {% if item.is_today %}birthday-card--today{% endif %}">
+        <div class="birthday-card__name">{{ item.member.nama_lengkap }}</div>
+        <div class="birthday-card__date">
+          {% if item.is_today %}
+            🎉 Hari Ini!
+          {% else %}
+            {{ item.date|date:"l, d F" }}
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </section>

@@ -143,3 +143,37 @@ class AlbumSlugTest(TestCase):
             title='Foto Natal', date=date(2025, 12, 25), cover_image=''
         )
         self.assertEqual(album.slug, 'foto-natal-2025-12-25')
+
+
+class SermonDetailSlugViewTest(TestCase):
+    def test_detail_view_accessible_by_slug(self):
+        sermon = Sermon.objects.create(
+            title='Faith Walk', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc'
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': sermon.slug})
+        )
+        self.assertEqual(response.status_code, 200)
+
+
+class WartaDetailSlugViewTest(TestCase):
+    def test_detail_view_accessible_by_slug(self):
+        warta = WartaJemaat.objects.create(
+            title='Warta Test', date=date(2025, 1, 1)
+        )
+        response = self.client.get(
+            reverse('website:warta_detail', kwargs={'slug': warta.slug})
+        )
+        self.assertEqual(response.status_code, 200)
+
+
+class AlbumDetailSlugViewTest(TestCase):
+    def test_detail_view_accessible_by_slug(self):
+        album = Album.objects.create(
+            title='Foto Test', date=date(2025, 12, 25), cover_image=''
+        )
+        response = self.client.get(
+            reverse('website:album_detail', kwargs={'slug': album.slug})
+        )
+        self.assertEqual(response.status_code, 200)
