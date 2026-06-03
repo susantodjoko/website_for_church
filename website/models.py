@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.text import slugify
 
 # Create your models here.
 class HeroSlide(models.Model):
@@ -47,10 +48,22 @@ class Sermon(models.Model):
     thumbnail = models.ImageField(upload_to='sermons/', blank=True)
     is_featured = models.BooleanField(default=False)
     topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True, db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    slug = models.SlugField(max_length=220, blank=True, null=True)
 
     class Meta:
         ordering = ['-date']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(f"{self.title}-{self.date}")
+            slug = base
+            counter = 1
+            while Sermon.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -93,7 +106,7 @@ class Event(models.Model):
     image = models.ImageField(upload_to='events/', blank=True)
     registration_url = models.URLField(blank=True)
     is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
         ordering = ['date']
@@ -139,11 +152,23 @@ class WartaJemaat(models.Model):
     pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
     is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    slug = models.SlugField(max_length=220, blank=True, null=True)
 
     class Meta:
         ordering = ['-date']
         verbose_name_plural = 'Warta Jemaat'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(f"{self.title}-{self.date}")
+            slug = base
+            counter = 1
+            while WartaJemaat.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.get_category_display()} — {self.title}'
@@ -154,10 +179,22 @@ class Album(models.Model):
     date = models.DateField()
     cover_image = models.ImageField(upload_to='gallery/')
     is_published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    slug = models.SlugField(max_length=220, blank=True, null=True)
 
     class Meta:
         ordering = ['-date']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(f"{self.title}-{self.date}")
+            slug = base
+            counter = 1
+            while Album.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

@@ -107,3 +107,39 @@ class AlbumTimestampTest(TestCase):
             title='Test Album', date=date(2025, 1, 1), cover_image=''
         )
         self.assertIsNotNone(album.created_at)
+
+
+class SermonSlugTest(TestCase):
+    def test_slug_auto_generated_on_save(self):
+        sermon = Sermon.objects.create(
+            title='Walking by Faith', pastor='P', date=date(2025, 6, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc'
+        )
+        self.assertEqual(sermon.slug, 'walking-by-faith-2025-06-01')
+
+    def test_duplicate_slugs_get_numeric_suffix(self):
+        Sermon.objects.create(
+            title='Same Title', pastor='P', date=date(2025, 6, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc'
+        )
+        s2 = Sermon.objects.create(
+            title='Same Title', pastor='P', date=date(2025, 6, 1),
+            description='', youtube_url='https://youtube.com/watch?v=xyz'
+        )
+        self.assertEqual(s2.slug, 'same-title-2025-06-01-1')
+
+
+class WartaSlugTest(TestCase):
+    def test_slug_auto_generated_on_save(self):
+        warta = WartaJemaat.objects.create(
+            title='Warta Minggu Ini', date=date(2025, 6, 1)
+        )
+        self.assertEqual(warta.slug, 'warta-minggu-ini-2025-06-01')
+
+
+class AlbumSlugTest(TestCase):
+    def test_slug_auto_generated_on_save(self):
+        album = Album.objects.create(
+            title='Foto Natal', date=date(2025, 12, 25), cover_image=''
+        )
+        self.assertEqual(album.slug, 'foto-natal-2025-12-25')
