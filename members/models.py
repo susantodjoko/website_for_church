@@ -4,13 +4,11 @@ from simple_history.models import HistoricalRecords
 
 BLOK_CHOICES = [
     ('CK1', 'CK1'), ('CK2', 'CK2'), ('CK3', 'CK3'),
-    ('GT1', 'GT1'), ('GT2', 'GT2'),
-    ('JS1', 'JS1'), ('JS2', 'JS2'), ('JS3', 'JS3'),
-    ('KD1', 'KD1'), ('KD2', 'KD2'),
-    ('KP1', 'KP1'), ('KP2', 'KP2'),
-    ('KS1', 'KS1'), ('KS2', 'KS2'),
-    ('KT1', 'KT1'), ('KT2', 'KT2'), ('KT3', 'KT3'),
-    ('KW1', 'KW1'), ('KW2', 'KW2'),
+    ('GD1', 'GD1'), 
+    ('JT1', 'JT1'), ('JT2', 'JT2'), ('JT3', 'JT3'),('JT4', 'JT4'),
+    ('JB1', 'JB1'), ('JB2', 'JB2'),('JB3', 'JB3'),('JB4', 'JB4'),('JB5', 'JB5'),
+    ('KM1', 'KM1'), ('KM2', 'KM2'),
+    ('KM3', 'KM3'), ('KM4', 'KM4'),('KM5', 'KM5'),
     ('KY1', 'KY1'), ('KY2', 'KY2'), ('KY3', 'KY3'), ('KY4', 'KY4'), ('KY5', 'KY5'),
 ]
 
