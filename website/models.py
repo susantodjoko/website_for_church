@@ -48,7 +48,7 @@ class Sermon(models.Model):
     is_featured = models.BooleanField(default=False)
     topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    slug = models.SlugField(max_length=220, blank=True, null=True)
+    slug = models.SlugField(max_length=220, unique=True, blank=True)
 
     class Meta:
         ordering = ['-date']
@@ -152,7 +152,7 @@ class WartaJemaat(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    slug = models.SlugField(max_length=220, blank=True, null=True)
+    slug = models.SlugField(max_length=220, unique=True, blank=True)
 
     class Meta:
         ordering = ['-date']
@@ -179,7 +179,7 @@ class Album(models.Model):
     cover_image = models.ImageField(upload_to='gallery/')
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
-    slug = models.SlugField(max_length=220, blank=True, null=True)
+    slug = models.SlugField(max_length=220, unique=True, blank=True)
 
     class Meta:
         ordering = ['-date']
