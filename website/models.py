@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class HeroSlide(models.Model):
@@ -46,6 +47,7 @@ class Sermon(models.Model):
     thumbnail = models.ImageField(upload_to='sermons/', blank=True)
     is_featured = models.BooleanField(default=False)
     topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-date']
@@ -91,6 +93,7 @@ class Event(models.Model):
     image = models.ImageField(upload_to='events/', blank=True)
     registration_url = models.URLField(blank=True)
     is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         ordering = ['date']
@@ -136,6 +139,7 @@ class WartaJemaat(models.Model):
     pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
     is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-date']
@@ -150,6 +154,7 @@ class Album(models.Model):
     date = models.DateField()
     cover_image = models.ImageField(upload_to='gallery/')
     is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     class Meta:
         ordering = ['-date']

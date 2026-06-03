@@ -1,6 +1,6 @@
 from django.test import TestCase
 from datetime import date
-from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage
+from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage, WartaJemaat, Album
 
 
 class HeroSlideModelTest(TestCase):
@@ -73,3 +73,37 @@ class SermonListViewTest(TestCase):
         response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
         self.assertEqual(len(response.context['sermons']), 1)
         self.assertEqual(response.context['sermons'][0].title, 'Faith Talk')
+
+
+class SermonTimestampTest(TestCase):
+    def test_created_at_is_set_on_create(self):
+        sermon = Sermon.objects.create(
+            title='Test Sermon', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc'
+        )
+        self.assertIsNotNone(sermon.created_at)
+
+
+class WartaTimestampTest(TestCase):
+    def test_created_at_is_set_on_create(self):
+        warta = WartaJemaat.objects.create(
+            title='Test Warta', date=date(2025, 1, 1)
+        )
+        self.assertIsNotNone(warta.created_at)
+
+
+class EventTimestampTest(TestCase):
+    def test_created_at_is_set_on_create(self):
+        event = Event.objects.create(
+            title='Test Event', date=date(2025, 1, 1),
+            time='09:00', location='Church', description='desc'
+        )
+        self.assertIsNotNone(event.created_at)
+
+
+class AlbumTimestampTest(TestCase):
+    def test_created_at_is_set_on_create(self):
+        album = Album.objects.create(
+            title='Test Album', date=date(2025, 1, 1), cover_image=''
+        )
+        self.assertIsNotNone(album.created_at)
