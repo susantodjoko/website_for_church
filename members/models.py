@@ -16,7 +16,7 @@ BLOK_CHOICES = [
 class Keluarga(models.Model):
     no_kk_gereja = models.CharField(max_length=20, unique=True)
     nama_keluarga = models.CharField(max_length=200)
-    blok = models.CharField(max_length=10, choices=BLOK_CHOICES)
+    blok = models.CharField(max_length=10, choices=BLOK_CHOICES, db_index=True)
     alamat = models.TextField()
 
     class Meta:
@@ -53,10 +53,10 @@ class Member(models.Model):
     nama_lengkap = models.CharField(max_length=200)
     jenis_kelamin = models.CharField(max_length=1, choices=JENIS_KELAMIN)
     tempat_lahir = models.CharField(max_length=100, blank=True)
-    tanggal_lahir = models.DateField(null=True, blank=True)
+    tanggal_lahir = models.DateField(null=True, blank=True, db_index=True)
     nomor_telepon = models.CharField(max_length=20, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Dewasa')
-    kewargaan = models.CharField(max_length=20, choices=KEWARGAAN_CHOICES, default='Warga')
+    kewargaan = models.CharField(max_length=20, choices=KEWARGAAN_CHOICES, default='Warga', db_index=True)
     gol_darah = models.CharField(max_length=5, choices=GOL_DARAH, blank=True)
     pendidikan = models.CharField(max_length=10, choices=PENDIDIKAN_CHOICES, blank=True)
     pekerjaan = models.CharField(max_length=100, blank=True)

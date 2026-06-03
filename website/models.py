@@ -45,7 +45,7 @@ class Sermon(models.Model):
     youtube_url = models.URLField()
     thumbnail = models.ImageField(upload_to='sermons/', blank=True)
     is_featured = models.BooleanField(default=False)
-    topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True)
+    topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True, db_index=True)
 
     class Meta:
         ordering = ['-date']
@@ -75,6 +75,8 @@ class ServiceTime(models.Model):
     is_online = models.BooleanField(default=False)
     link_label = models.CharField(max_length=100)
     link_url = models.CharField(max_length=200)
+    youtube_live_url = models.URLField(blank=True)
+    is_live_now = models.BooleanField(default=False)
 
     def __str__(self):
         return self.campus_name
@@ -102,53 +104,29 @@ class AboutPage(models.Model):
     pastor_name = models.CharField(max_length=100)
     pastor_bio = models.TextField()
     pastor_photo = models.ImageField(upload_to='about/', blank=True)
-    value_1_title = models.CharField(max_length=100)
-    value_1_body = models.TextField()
-    value_2_title = models.CharField(max_length=100)
-    value_2_body = models.TextField()
-    value_3_title = models.CharField(max_length=100)
-    value_3_body = models.TextField()
-    value_4_title = models.CharField(max_length=100)
-    value_4_body = models.TextField()
 
     def __str__(self):
         return 'About Page'
+
+
+class AboutValue(models.Model):
+    page = models.ForeignKey(AboutPage, on_delete=models.CASCADE, related_name='values')
+    title = models.CharField(max_length=100)
+    body = models.TextField()
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
     
-class News(models.Model):
-    title = models.CharField(max_length=200)
-    date = models.DateField()
-    content = models.TextField()
-    image = models.ImageField(upload_to='news/', blank=True)
-    is_published = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['-date']
-        verbose_name_plural = 'News'
-
-    def __str__(self):
-        return self.title
-
-class Liturgi(models.Model):
-    title = models.CharField(max_length=200)
-    date = models.DateField()
-    content = models.TextField()
-    image = models.ImageField(upload_to='liturgi/', blank=True)
-    is_published = models.BooleanField(default=True)
-    is_liturgi = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['-date']
-        verbose_name_plural = 'Liturgi'
-
-    def __str__(self):
-        return self.title
-
 
 class WartaJemaat(models.Model):
     CATEGORY_CHOICES = [
         ('warta', 'Warta Mingguan'),
-        ('berita', 'Berita Jemaat'),
         ('pengumuman', 'Pengumuman'),
+        ('liturgi', 'Liturgi'),
     ]
 
     title = models.CharField(max_length=200)
@@ -156,7 +134,7 @@ class WartaJemaat(models.Model):
     content = models.TextField(blank=True)
     image = models.ImageField(upload_to='warta/', blank=True)
     pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
     is_published = models.BooleanField(default=True)
 
     class Meta:
@@ -165,3 +143,43 @@ class WartaJemaat(models.Model):
 
     def __str__(self):
         return f'{self.get_category_display()} — {self.title}'
+
+
+class Album(models.Model):
+    title = models.CharField(max_length=200)
+    date = models.DateField()
+    cover_image = models.ImageField(upload_to='gallery/')
+    is_published = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['-date']
+
+    def __str__(self):
+        return self.title
+
+
+class Photo(models.Model):
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='photos')
+    image = models.ImageField(upload_to='gallery/')
+    caption = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return self.caption or str(self.album)
+
+class ContactMessage(models.Model):
+    TYPE_CHOICES = [
+        ('contact', 'Kontak Umum'),
+        ('prayer', 'Permintaan Doa'),
+    ]
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='contact')
+    message = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f'{self.name} — {self.get_message_type_display()}'
