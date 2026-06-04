@@ -20,7 +20,9 @@
         <div class="card__body">
           <h3 class="card__title">{{ event.title }}</h3>
           <p class="card__meta">
-            {{ event.date }} &middot; {{ event.time|time:"H:i" }} &middot; {{ event.location }}
+            {{ event.date }} &middot; {{ event.time|time:"H:i" }} &middot;
+            <a href="https://maps.google.com/?q={{ event.location|urlencode }}"
+               target="_blank" rel="noopener">{{ event.location }}</a>
           </p>
           <p class="card__text">{{ event.description }}</p>
           {% if event.registration_url %}

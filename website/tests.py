@@ -247,6 +247,18 @@ class AboutContactCTATest(TestCase):
         self.assertContains(response, 'Kirim Pesan')
 
 
+class EventsMapsLinkTest(TestCase):
+    def test_event_location_is_maps_link(self):
+        Event.objects.create(
+            title='Kebaktian Natal', date=date(2025, 12, 25),
+            time='09:00', location='Gedung GKJ Salatiga',
+            description='Ibadah natal bersama.'
+        )
+        response = self.client.get(reverse('website:event_list'))
+        self.assertContains(response, 'maps.google.com')
+        self.assertContains(response, 'Gedung GKJ Salatiga')
+
+
 class EmptyStateTest(TestCase):
     def test_events_empty_state_has_contact_link(self):
         response = self.client.get(reverse('website:event_list'))
