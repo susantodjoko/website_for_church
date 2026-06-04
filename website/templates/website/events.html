@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Events — GKJ Salatiga{% endblock %}
+{% block title %}Kegiatan — GKJ Salatiga{% endblock %}
 
 {% block content %}
 <header class="page-header">
   <div class="container">
-    <h1 class="page-header__title">Events</h1>
-    <p class="page-header__sub">Stay connected with what's happening at GKJ Salatiga</p>
+    <h1 class="page-header__title">Kegiatan</h1>
+    <p class="page-header__sub">Tetap terhubung dengan kegiatan di GKJ Salatiga</p>
   </div>
 </header>
 
@@ -29,7 +29,10 @@
         </div>
       </div>
       {% empty %}
-      <p style="color: var(--color-text-muted);">No upcoming events.</p>
+      <div class="empty-state">
+        <p>Belum ada kegiatan yang akan datang.</p>
+        <a href="{% url 'website:contact' %}" class="btn btn--outline">Hubungi Kami</a>
+      </div>
       {% endfor %}
     </div>
   </div>

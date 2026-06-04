@@ -611,3 +611,199 @@ ul { list-style: none; }
   .detail-grid { grid-template-columns: 1fr; }
   .card-grid { grid-template-columns: 1fr; }
 }
+
+/* Rich text content (Summernote output) */
+.rich-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.rich-content table th,
+.rich-content table td {
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.rich-content table th {
+  background: var(--color-surface);
+  font-weight: 600;
+  color: var(--color-heading);
+}
+
+.rich-content table tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+}
+
+.rich-content table tr:hover td {
+  background: var(--color-light);
+}
+
+.rich-content img { max-width: 100%; height: auto; border-radius: 6px; }
+.rich-content ul, .rich-content ol { padding-left: 1.5rem; margin: 1rem 0; }
+.rich-content li { margin-bottom: 0.4rem; }
+.rich-content blockquote {
+  border-left: 4px solid var(--color-primary);
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.stat-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.stat-card__number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.stat-card__label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--color-text);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-white);
+  transition: border-color var(--transition);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.form-group--checkbox {
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+}
+
+.form-group--checkbox label { margin-bottom: 0; }
+.form-group--checkbox input { width: auto; }
+
+.form-error { color: red; font-size: 0.85rem; margin-top: 0.3rem; }
+
+.back-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition);
+  z-index: 999;
+}
+
+.back-to-top.visible { opacity: 1; }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition);
+}
+
+.photo-item img:hover { transform: scale(1.03); }
+
+.photo-caption {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.4rem;
+  text-align: center;
+}
+
+.form-group--full { grid-column: 1 / -1; }
+
+.birthday-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.birthday-card {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  border-top: 3px solid var(--color-border);
+}
+
+.birthday-card--today {
+  border-top-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.birthday-card__name {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.birthday-card__date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.birthday-card--today .birthday-card__date {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+.empty-state p { margin-bottom: 1rem; }

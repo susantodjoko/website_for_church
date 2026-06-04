@@ -38,7 +38,10 @@
         </div>
       </a>
       {% empty %}
-      <p style="color: var(--color-text-muted);">No sermons found for this filter.</p>
+      <div class="empty-state">
+        <p>Belum ada khotbah untuk topik ini.</p>
+        <a href="{% url 'website:sermon_list' %}" class="btn btn--outline">Lihat Semua Khotbah</a>
+      </div>
       {% endfor %}
     </div>
   </div>

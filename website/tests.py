@@ -219,3 +219,22 @@ class SermonDetailRelatedTest(TestCase):
         )
         self.assertContains(response, 'wa.me')
         self.assertContains(response, 'Salin Tautan')
+
+
+class EmptyStateTest(TestCase):
+    def test_events_empty_state_has_contact_link(self):
+        response = self.client.get(reverse('website:event_list'))
+        self.assertContains(response, 'Hubungi Kami')
+
+    def test_sermons_empty_state_has_back_link(self):
+        Sermon.objects.create(
+            title='Family Talk', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc',
+            topic='family'
+        )
+        response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
+        self.assertContains(response, 'Lihat Semua Khotbah')
+
+    def test_gallery_empty_state_shown(self):
+        response = self.client.get(reverse('website:gallery'))
+        self.assertContains(response, 'Belum ada foto yang tersedia')

@@ -25,7 +25,9 @@
         </div>
       </a>
       {% empty %}
-      <p style="color: var(--color-text-muted);">Belum ada album.</p>
+      <div class="empty-state">
+        <p>Belum ada foto yang tersedia.</p>
+      </div>
       {% endfor %}
     </div>
   </div>
