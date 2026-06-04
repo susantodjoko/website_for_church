@@ -235,6 +235,18 @@ class FooterContextProcessorTest(TestCase):
         self.assertEqual(len(list(response.context['footer_service_times'])), 1)
 
 
+class AboutContactCTATest(TestCase):
+    def test_about_page_has_contact_cta(self):
+        AboutPage.objects.create(
+            mission_statement='Komunitas iman.',
+            pastor_name='Pdt. Test',
+            pastor_bio='Bio pendeta.'
+        )
+        response = self.client.get(reverse('website:about'))
+        self.assertContains(response, 'Kunjungi Kami')
+        self.assertContains(response, 'Kirim Pesan')
+
+
 class EmptyStateTest(TestCase):
     def test_events_empty_state_has_contact_link(self):
         response = self.client.get(reverse('website:event_list'))

@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}About — GKJ Salatiga{% endblock %}
-
+{% block title %}Tentang — GKJ Salatiga{% endblock %}
+{% block meta_description %}Tentang GKJ Salatiga — visi, misi, dan pendeta jemaat kami.{% endblock %}
+{% block og_title %}Tentang GKJ Salatiga{% endblock %}
+{% block og_description %}Pelajari lebih lanjut tentang GKJ Salatiga, visi, misi, dan pendeta jemaat kami.{% endblock %}
 {% block content %}
 <header class="page-header">
   <div class="container">
-    <h1 class="page-header__title">About Us</h1>
+    <h1 class="page-header__title">Tentang Kami</h1>
     {% if about %}
-      <p class="page-header__sub">{{ about.mission_statement }}</p>
+      <div class="page-header__sub">{{ about.mission_statement|safe }}</div>
     {% endif %}
   </div>
 </header>
@@ -23,27 +25,30 @@
         <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">
           {{ about.pastor_name }}
         </h2>
-        <p style="color: var(--color-text-muted); line-height: 1.8;">{{ about.pastor_bio }}</p>
+        <div style="color: var(--color-text-muted); line-height: 1.8;">{{ about.pastor_bio|safe }}</div>
       </div>
     </div>
 
-    <h2 class="section__title">Our Core Values</h2>
+    {% if about.values.exists %}
+    <h2 class="section__title">Nilai-Nilai Kami</h2>
     <div class="values-grid">
+      {% for value in about.values.all %}
       <div class="value-card">
-        <h3 class="value-card__title">{{ about.value_1_title }}</h3>
-        <p>{{ about.value_1_body }}</p>
+        <h3 class="value-card__title">{{ value.title }}</h3>
+        <div>{{ value.body|safe }}</div>
       </div>
-      <div class="value-card">
-        <h3 class="value-card__title">{{ about.value_2_title }}</h3>
-        <p>{{ about.value_2_body }}</p>
-      </div>
-      <div class="value-card">
-        <h3 class="value-card__title">{{ about.value_3_title }}</h3>
-        <p>{{ about.value_3_body }}</p>
-      </div>
-      <div class="value-card">
-        <h3 class="value-card__title">{{ about.value_4_title }}</h3>
-        <p>{{ about.value_4_body }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="about-contact" style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--color-border);">
+      <h2 class="section__title">Kunjungi Kami</h2>
+      <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">
+        Kami terbuka untuk Anda. Jangan ragu untuk menghubungi atau datang langsung.
+      </p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{% url 'website:contact' %}" class="btn btn--primary">Kirim Pesan</a>
+        <a href="{% url 'website:visit' %}" class="btn btn--outline">Jam &amp; Lokasi</a>
       </div>
     </div>
 
