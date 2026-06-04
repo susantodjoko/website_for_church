@@ -177,3 +177,45 @@ class AlbumDetailSlugViewTest(TestCase):
             reverse('website:album_detail', kwargs={'slug': album.slug})
         )
         self.assertEqual(response.status_code, 200)
+
+
+class SermonDetailRelatedTest(TestCase):
+    def test_related_sermons_in_context(self):
+        series = SermonSeries.objects.create(name='Test Series')
+        s1 = Sermon.objects.create(
+            title='Sermon One', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc',
+            series=series
+        )
+        s2 = Sermon.objects.create(
+            title='Sermon Two', pastor='P', date=date(2025, 2, 1),
+            description='', youtube_url='https://youtube.com/watch?v=xyz',
+            series=series
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': s1.slug})
+        )
+        self.assertIn(s2, response.context['related'])
+
+    def test_related_excludes_current_sermon(self):
+        series = SermonSeries.objects.create(name='Test Series')
+        s1 = Sermon.objects.create(
+            title='Solo Sermon', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc',
+            series=series
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': s1.slug})
+        )
+        self.assertNotIn(s1, response.context['related'])
+
+    def test_share_buttons_present(self):
+        sermon = Sermon.objects.create(
+            title='Faith Talk', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc'
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': sermon.slug})
+        )
+        self.assertContains(response, 'wa.me')
+        self.assertContains(response, 'Salin Tautan')

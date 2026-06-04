@@ -45,9 +45,16 @@ def sermon_list(request):
 def sermon_detail(request, slug):
     sermon = get_object_or_404(Sermon, slug=slug)
     video_id = _extract_youtube_id(sermon.youtube_url)
+    related = Sermon.objects.exclude(pk=sermon.pk)
+    if sermon.series:
+        related = related.filter(series=sermon.series)
+    elif sermon.topic:
+        related = related.filter(topic=sermon.topic)
+    related = related[:3]
     return render(request, 'website/sermon_detail.html', {
         'sermon': sermon,
         'video_id': video_id,
+        'related': related,
     })
 
 

@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}{{ sermon.title }} — GKJ Salatiga{% endblock %}
+{% block meta_description %}{{ sermon.description|striptags|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ sermon.title }} — GKJ Salatiga{% endblock %}
+{% block og_description %}{{ sermon.description|striptags|truncatechars:160 }}{% endblock %}
 
 {% block content %}
 <div class="sermon-detail">
@@ -33,7 +36,34 @@
       {% endif %}
     </div>
 
-    <p style="line-height: 1.8; color: var(--color-text-muted);">{{ sermon.description }}</p>
+    <div class="rich-content" style="line-height: 1.8; color: var(--color-text-muted);">{{ sermon.description|safe }}</div>
+
+    <div class="share-row" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem;">
+      <a href="https://wa.me/?text={{ sermon.title|urlencode }}%20{{ request.build_absolute_uri }}"
+         target="_blank" rel="noopener" class="btn btn--outline">Bagikan via WhatsApp</a>
+      <button onclick="navigator.clipboard.writeText(window.location.href)"
+              class="btn btn--outline">Salin Tautan</button>
+    </div>
+
+    {% if related %}
+    <div style="margin-top: 3rem; border-top: 1px solid var(--color-border); padding-top: 2rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Khotbah Terkait</h2>
+      <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+        {% for s in related %}
+        <a href="{% url 'website:sermon_detail' s.slug %}" class="card">
+          {% if s.thumbnail %}
+            <img src="{{ s.thumbnail.url }}" alt="{{ s.title }}" class="card__img">
+          {% endif %}
+          <div class="card__body">
+            <p class="card__tag">{{ s.pastor }}</p>
+            <h3 class="card__title">{{ s.title }}</h3>
+            <p class="card__meta">{{ s.date }}</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     <div style="margin-top: 2rem;">
       <a href="{% url 'website:sermon_list' %}" class="btn btn--outline">&larr; Back to Sermons</a>
