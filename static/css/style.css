@@ -441,7 +441,7 @@ ul { list-style: none; }
 
 .footer__inner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr 1fr;
   gap: var(--space-lg);
   align-items: start;
   margin-bottom: var(--space-lg);

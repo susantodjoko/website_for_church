@@ -221,6 +221,20 @@ class SermonDetailRelatedTest(TestCase):
         self.assertContains(response, 'Salin Tautan')
 
 
+class FooterContextProcessorTest(TestCase):
+    def test_footer_service_times_in_context(self):
+        ServiceTime.objects.create(
+            campus_name='Gedung Utama',
+            address='Jl. Test No. 1, Salatiga',
+            times='Minggu 08:00 & 10:00',
+            link_label='Info',
+            link_url='/'
+        )
+        response = self.client.get(reverse('website:home'))
+        self.assertIn('footer_service_times', response.context)
+        self.assertEqual(len(list(response.context['footer_service_times'])), 1)
+
+
 class EmptyStateTest(TestCase):
     def test_events_empty_state_has_contact_link(self):
         response = self.client.get(reverse('website:event_list'))
