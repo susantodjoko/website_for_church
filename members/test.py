@@ -60,7 +60,7 @@ class BlokChoicesTest(TestCase):
 
 
 from datetime import date
-from members.importers import parse_date, normalize_blok
+from members.importers import parse_date, normalize_blok, import_sensus_rows
 
 
 class ParseDateTest(TestCase):
@@ -113,3 +113,105 @@ class NormalizeBlokTest(TestCase):
 
     def test_empty_string(self):
         self.assertEqual(normalize_blok(''), '')
+
+
+class ImportSensusRowsTest(TestCase):
+
+    def _row(self, **overrides):
+        defaults = {
+            'No. induk gereja (lihat surat baptisi/sidhi/nikah)': '99999',
+            'Nama lengkap': 'Budi Santoso',
+            'Jenis kelamin': 'laki-laki',
+            'Tempat lahir (sesuai KTP)': 'Salatiga',
+            'Tanggal lahir (tanggal/bulan/tahun)': '01/01/1990',
+            'Alamat domisili': 'Jl. Test 1',
+            'No. telepon': '08123456789',
+            'Alamat sesuai KTP': 'Jl. Test 1',
+            'Blok (Kelompok PPA)': 'CK01',
+            'Status perkawinan': 'menikah',
+            'Kategori usia': 'dewasa (41-60 tahun)',
+            'kategori kewargaan': 'warga',
+            'Golongan darah': 'O',
+            'pendidikan terakhir': 'S1',
+            'No. KK (Kartu Kewargaan gereja) (diisi petugas)': '',
+            'status dalam keluarga': 'kepala keluarga',
+            'pekerjaan': 'swasta',
+            'Status rumah tinggal': 'milik sendiri',
+            'Tempat kebaktian': 'induk',
+            'Jika di pertanyaan sebelumnya tempat kebaktian di gereja lain, isilah nama gerejanya dan kotanya': '',
+            'Status (iman)': 'dewasa',
+            'Baptis oleh (nama pembaptis) (lihat surat baptis)': 'Pdt. Test',
+            'tanggal baptis (lihat surat baptis)': '25/12/2000',
+            'sidhi oleh (nama pendeta) (lihat surat sidhi)': 'Pdt. Test',
+            'tanggal sidhi (lihat surat sidhi)': '25/12/2010',
+            'nikah oleh (lihat surat nikah)': '',
+            'tanggal nikah (lihat surat nikah)': '',
+            'tempat baptis (nama gereja) (lihat surat baptis)': 'GKJ Salatiga',
+            'tempat sidhi (nama gereja) (lihat surat sidhi)': 'GKJ Salatiga',
+            'tempat nikah (nama gereja/kota)': '',
+            'status kewargaan gereja': 'warga',
+            'Minat pelayanan gerejawi': 'paduan suara',
+            'minat pelayanan umum': 'sosial',
+        }
+        defaults.update(overrides)
+        return defaults
+
+    def test_imports_new_member(self):
+        result = import_sensus_rows([self._row()])
+        self.assertEqual(result.imported, 1)
+        self.assertEqual(result.updated, 0)
+        self.assertTrue(Member.objects.filter(no_sensus='99999').exists())
+
+    def test_updates_existing_member(self):
+        import_sensus_rows([self._row()])
+        result = import_sensus_rows([self._row(**{'Nama lengkap': 'Budi Updated'})])
+        self.assertEqual(result.updated, 1)
+        self.assertEqual(result.imported, 0)
+        self.assertEqual(Member.objects.get(no_sensus='99999').nama_lengkap, 'Budi Updated')
+
+    def test_skips_row_with_empty_nama(self):
+        result = import_sensus_rows([self._row(**{'Nama lengkap': ''})])
+        self.assertEqual(result.skipped, 1)
+        self.assertEqual(result.imported, 0)
+
+    def test_empty_sensus_generates_temp_no(self):
+        result = import_sensus_rows([self._row(**{
+            'No. induk gereja (lihat surat baptisi/sidhi/nikah)': '-',
+        })])
+        self.assertEqual(result.imported, 1)
+        self.assertTrue(Member.objects.filter(no_sensus__startswith='IMPORT-').exists())
+
+    def test_sets_sudah_baptis_when_baptis_oleh_present(self):
+        import_sensus_rows([self._row()])
+        m = Member.objects.get(no_sensus='99999')
+        self.assertTrue(m.sudah_baptis)
+        self.assertEqual(m.baptis_oleh, 'Pdt. Test')
+
+    def test_sets_sudah_sidi_when_sidi_oleh_present(self):
+        import_sensus_rows([self._row()])
+        m = Member.objects.get(no_sensus='99999')
+        self.assertTrue(m.sudah_sidi)
+
+    def test_creates_keluarga_when_kk_provided(self):
+        import_sensus_rows([self._row(**{
+            'No. KK (Kartu Kewargaan gereja) (diisi petugas)': 'CK2-TEST-001',
+        })])
+        self.assertTrue(Keluarga.objects.filter(no_kk_gereja='CK2-TEST-001').exists())
+
+    def test_normalizes_blok_on_keluarga(self):
+        import_sensus_rows([self._row(**{
+            'No. KK (Kartu Kewargaan gereja) (diisi petugas)': 'CK2-TEST-002',
+            'Blok (Kelompok PPA)': 'CK01',
+        })])
+        k = Keluarga.objects.get(no_kk_gereja='CK2-TEST-002')
+        self.assertEqual(k.blok, 'CK1')
+
+    def test_result_counts_multiple_rows(self):
+        rows = [
+            self._row(**{'No. induk gereja (lihat surat baptisi/sidhi/nikah)': '11111', 'Nama lengkap': 'Alice'}),
+            self._row(**{'No. induk gereja (lihat surat baptisi/sidhi/nikah)': '22222', 'Nama lengkap': 'Bob'}),
+            self._row(**{'Nama lengkap': ''}),
+        ]
+        result = import_sensus_rows(rows)
+        self.assertEqual(result.imported, 2)
+        self.assertEqual(result.skipped, 1)
