@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% block title %}{{ member.nama_lengkap }} — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="members-layout">
+  <div class="container" style="max-width: 900px;">
+
+    <div style="margin-bottom: 1.5rem;">
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline">&larr; Back to Members</a>
+    </div>
+
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.25rem;">
+      {{ member.nama_lengkap }}
+    </h1>
+    <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">
+      No. Sensus: {{ member.no_sensus }}
+      {% if member.blok %} &middot; Blok {{ member.blok }}{% endif %}
+    </p>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="pribadi">Data Pribadi</button>
+      <button class="tab-btn" data-tab="iman">Iman</button>
+      <button class="tab-btn" data-tab="pelayanan">Pelayanan</button>
+      <button class="tab-btn" data-tab="riwayat">Riwayat</button>
+    </div>
+
+    <!-- Tab 1: Data Pribadi -->
+    <div id="tab-pribadi" class="tab-panel">
+      <div class="detail-section">
+        <h3>Data Pribadi</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Jenis Kelamin</p>
+            <p class="detail-item__value">{{ member.get_jenis_kelamin_display }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tempat, Tanggal Lahir</p>
+            <p class="detail-item__value">
+              {{ member.tempat_lahir|default:"—" }}{% if member.tanggal_lahir %}, {{ member.tanggal_lahir }}{% endif %}
+            </p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Kategori Usia</p>
+            <p class="detail-item__value">{{ member.status|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Status Perkawinan</p>
+            <p class="detail-item__value">{{ member.status_perkawinan|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Golongan Darah</p>
+            <p class="detail-item__value">{{ member.gol_darah|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Pendidikan</p>
+            <p class="detail-item__value">{{ member.pendidikan|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Pekerjaan</p>
+            <p class="detail-item__value">{{ member.pekerjaan|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Nomor Telepon</p>
+            <p class="detail-item__value">{{ member.nomor_telepon|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Alamat &amp; Keluarga</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Alamat Domisili</p>
+            <p class="detail-item__value">{{ member.alamat_domisili|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Alamat KTP</p>
+            <p class="detail-item__value">{{ member.alamat_ktp|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Blok</p>
+            <p class="detail-item__value">{{ member.blok|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Keluarga</p>
+            <p class="detail-item__value">
+              {% if member.keluarga %}{{ member.keluarga.nama_keluarga }}{% else %}—{% endif %}
+            </p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Status dalam Keluarga</p>
+            <p class="detail-item__value">{{ member.ket_status|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Status Rumah Tinggal</p>
+            <p class="detail-item__value">{{ member.status_rumah_tinggal|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Iman -->
+    <div id="tab-iman" class="tab-panel tab-panel--hidden">
+      <div class="detail-section">
+        <h3>Kewargaan &amp; Ibadah</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Kewargaan</p>
+            <p class="detail-item__value">
+              <span class="badge badge--{{ member.kewargaan|lower|cut:' ' }}">
+                {{ member.kewargaan }}
+              </span>
+            </p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tempat Kebaktian</p>
+            <p class="detail-item__value">{{ member.tempat_kebaktian|default:"—" }}</p>
+          </div>
+          {% if member.nama_gereja_lain %}
+          <div class="detail-item">
+            <p class="detail-item__label">Nama Gereja</p>
+            <p class="detail-item__value">{{ member.nama_gereja_lain }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Baptis</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Status</p>
+            <p class="detail-item__value">{% if member.sudah_baptis %}Sudah Baptis{% else %}Belum Baptis{% endif %}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Dibaptis oleh</p>
+            <p class="detail-item__value">{{ member.baptis_oleh|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tanggal Baptis</p>
+            <p class="detail-item__value">{{ member.tanggal_baptis|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tempat Baptis</p>
+            <p class="detail-item__value">{{ member.tempat_baptis|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Sidi</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Status</p>
+            <p class="detail-item__value">{% if member.sudah_sidi %}Sudah Sidi{% else %}Belum Sidi{% endif %}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Disidi oleh</p>
+            <p class="detail-item__value">{{ member.sidi_oleh|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tanggal Sidi</p>
+            <p class="detail-item__value">{{ member.tanggal_sidi|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tempat Sidi</p>
+            <p class="detail-item__value">{{ member.tempat_sidi|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+
+      {% if member.nikah_oleh or member.tanggal_nikah %}
+      <div class="detail-section">
+        <h3>Nikah</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Dinikahkan oleh</p>
+            <p class="detail-item__value">{{ member.nikah_oleh|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tanggal Nikah</p>
+            <p class="detail-item__value">{{ member.tanggal_nikah|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Tempat Nikah</p>
+            <p class="detail-item__value">{{ member.tempat_nikah|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Tab 3: Pelayanan -->
+    <div id="tab-pelayanan" class="tab-panel tab-panel--hidden">
+      <div class="detail-section">
+        <h3>Minat Pelayanan</h3>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <p class="detail-item__label">Minat Pelayanan Gerejawi</p>
+            <p class="detail-item__value">{{ member.minat_pelayanan_gerejawi|default:"—" }}</p>
+          </div>
+          <div class="detail-item">
+            <p class="detail-item__label">Minat Pelayanan Umum</p>
+            <p class="detail-item__value">{{ member.minat_pelayanan_umum|default:"—" }}</p>
+          </div>
+        </div>
+      </div>
+
+      {% if member.pelayanan_diikuti %}
+      <div class="detail-section">
+        <h3>Pelayanan Diikuti</h3>
+        <p>{{ member.pelayanan_diikuti }}</p>
+      </div>
+      {% endif %}
+
+      {% if member.ibadah_sering_diikuti %}
+      <div class="detail-section">
+        <h3>Ibadah Sering Diikuti</h3>
+        <p>{{ member.ibadah_sering_diikuti }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Tab 4: Riwayat -->
+    <div id="tab-riwayat" class="tab-panel tab-panel--hidden">
+      <div class="detail-section">
+        <h3>Riwayat Perubahan</h3>
+        {% if history_changes %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Jenis</th>
+              <th>Perubahan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in history_changes %}
+            <tr>
+              <td>
+                {% if entry.type == '+' %}Ditambah
+                {% elif entry.type == '~' %}Diubah
+                {% else %}Dihapus{% endif %}
+              </td>
+              <td>
+                {% if entry.fields %}
+                  {% for f in entry.fields %}
+                    <div style="font-size: 0.875rem;">
+                      <strong>{{ f.field }}</strong>: {{ f.old|default:"—" }} → {{ f.new|default:"—" }}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <span style="color: var(--color-text-muted);">—</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p style="color: var(--color-text-muted);">Belum ada riwayat perubahan.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="{% url 'members:member_edit' member.pk %}" class="btn btn--primary">Edit</a>
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline">Back to List</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.add('tab-panel--hidden'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.remove('tab-panel--hidden');
+    });
+  });
+</script>
+{% endblock %}

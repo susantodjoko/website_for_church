@@ -41,7 +41,28 @@ def member_list(request):
 @login_required
 def member_detail(request, pk):
     member = get_object_or_404(Member, pk=pk)
-    return render(request, 'members/member_detail.html', {'member': member})
+
+    history_records = list(member.history.all())
+    history_changes = []
+    for i, record in enumerate(history_records):
+        entry = {
+            'type': record.history_type,
+            'fields': [],
+        }
+        if record.history_type == '~' and i + 1 < len(history_records):
+            delta = record.diff_against(history_records[i + 1])
+            for change in delta.changes:
+                entry['fields'].append({
+                    'field': change.field,
+                    'old': change.old,
+                    'new': change.new,
+                })
+        history_changes.append(entry)
+
+    return render(request, 'members/member_detail.html', {
+        'member': member,
+        'history_changes': history_changes,
+    })
 
 
 @login_required

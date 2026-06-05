@@ -337,3 +337,40 @@ class DashboardContextTest(TestCase):
     def test_dashboard_contains_ulang_tahun(self):
         response = self.client.get(reverse('members:dashboard'))
         self.assertContains(response, 'Ulang Tahun')
+
+
+class MemberDetailTabsTest(TestCase):
+    def setUp(self):
+        self.staff = User.objects.create_user(
+            username='staff2', password='pass', is_staff=True
+        )
+        self.client.login(username='staff2', password='pass')
+        self.member = Member.objects.create(
+            no_sensus='TAB001', nama_lengkap='Tab Tester',
+            jenis_kelamin='L', kewargaan='Warga', status='Dewasa'
+        )
+
+    def test_detail_page_contains_tab_buttons(self):
+        response = self.client.get(reverse('members:member_detail', args=[self.member.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'tab-btn')
+        self.assertContains(response, 'Data Pribadi')
+        self.assertContains(response, 'Iman')
+        self.assertContains(response, 'Pelayanan')
+        self.assertContains(response, 'Riwayat')
+
+    def test_detail_shows_alamat_domisili(self):
+        self.member.alamat_domisili = 'Jl. Test No. 1'
+        self.member.save()
+        response = self.client.get(reverse('members:member_detail', args=[self.member.pk]))
+        self.assertContains(response, 'Jl. Test No. 1')
+
+    def test_detail_shows_baptis_oleh(self):
+        self.member.baptis_oleh = 'Pdt. Test'
+        self.member.save()
+        response = self.client.get(reverse('members:member_detail', args=[self.member.pk]))
+        self.assertContains(response, 'Pdt. Test')
+
+    def test_history_changes_in_context(self):
+        response = self.client.get(reverse('members:member_detail', args=[self.member.pk]))
+        self.assertIn('history_changes', response.context)
