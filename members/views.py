@@ -100,26 +100,42 @@ def export_members_csv(request):
 
 @login_required
 def dashboard(request):
+    from datetime import date, timedelta
+
     total = Member.objects.count()
     by_kewargaan = Member.objects.values('kewargaan').annotate(total=Count('id')).order_by('kewargaan')
     by_blok = Member.objects.exclude(blok='').values('blok').annotate(
         total_keluarga=Count('id')
     ).order_by('blok')
+    by_status = Member.objects.values('status').annotate(total=Count('id')).order_by('status')
     baptized = Member.objects.filter(sudah_baptis=True).count()
     sidi = Member.objects.filter(sudah_sidi=True).count()
     dewasa = Member.objects.filter(status='Dewasa').count()
     anak = Member.objects.filter(status='Anak').count()
     total_keluarga = Keluarga.objects.count()
 
+    today = date.today()
+    week_dates = [today + timedelta(days=i) for i in range(7)]
+    birthdays = []
+    for d in week_dates:
+        for m in Member.objects.filter(
+            tanggal_lahir__isnull=False,
+            tanggal_lahir__month=d.month,
+            tanggal_lahir__day=d.day,
+        ).exclude(kewargaan='Meninggal'):
+            birthdays.append({'member': m, 'date': d, 'is_today': d == today})
+
     return render(request, 'members/dashboard.html', {
         'total': total,
         'by_kewargaan': by_kewargaan,
         'by_blok': by_blok,
+        'by_status': by_status,
         'baptized': baptized,
         'sidi': sidi,
         'dewasa': dewasa,
         'anak': anak,
         'total_keluarga': total_keluarga,
+        'birthdays': birthdays,
     })
 
 @login_required

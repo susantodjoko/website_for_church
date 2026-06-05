@@ -309,3 +309,31 @@ class CsvImportAdminViewTest(TestCase):
         url = reverse('admin:members_member_import_sensus')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
+
+
+class DashboardContextTest(TestCase):
+    def setUp(self):
+        self.staff = User.objects.create_user(
+            username='dash_staff', password='pass', is_staff=True
+        )
+        self.client.login(username='dash_staff', password='pass')
+
+    def test_by_status_in_context(self):
+        Member.objects.create(
+            no_sensus='D001', nama_lengkap='Anak Test',
+            jenis_kelamin='L', kewargaan='Warga', status='Anak'
+        )
+        response = self.client.get(reverse('members:dashboard'))
+        self.assertIn('by_status', response.context)
+
+    def test_birthdays_in_context(self):
+        response = self.client.get(reverse('members:dashboard'))
+        self.assertIn('birthdays', response.context)
+
+    def test_dashboard_contains_sebaran_usia(self):
+        response = self.client.get(reverse('members:dashboard'))
+        self.assertContains(response, 'Sebaran Kategori Usia')
+
+    def test_dashboard_contains_ulang_tahun(self):
+        response = self.client.get(reverse('members:dashboard'))
+        self.assertContains(response, 'Ulang Tahun')

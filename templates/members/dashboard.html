@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="members-layout">
+  <div class="container">
+
+    <div class="members-header">
+      <h1>Dashboard</h1>
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline">&larr; Members</a>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="detail-grid" style="margin-bottom: 2rem;">
+      <div class="stat-card">
+        <p class="stat-card__number">{{ total }}</p>
+        <p class="stat-card__label">Total Anggota</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__number">{{ total_keluarga }}</p>
+        <p class="stat-card__label">Total Keluarga</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__number">{{ dewasa }}</p>
+        <p class="stat-card__label">Dewasa</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__number">{{ anak }}</p>
+        <p class="stat-card__label">Anak</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__number">{{ baptized }}</p>
+        <p class="stat-card__label">Sudah Baptis</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card__number">{{ sidi }}</p>
+        <p class="stat-card__label">Sudah Sidi</p>
+      </div>
+    </div>
+
+    <!-- Tables row -->
+    <div class="detail-grid" style="margin-bottom: 2rem;">
+      <div class="detail-section" style="flex: 1;">
+        <h3>Anggota per Kewargaan</h3>
+        <table class="data-table">
+          <thead><tr><th>Kewargaan</th><th>Jumlah</th></tr></thead>
+          <tbody>
+            {% for row in by_kewargaan %}
+            <tr><td>{{ row.kewargaan }}</td><td>{{ row.total }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="detail-section" style="flex: 1;">
+        <h3>Anggota per Blok</h3>
+        <table class="data-table">
+          <thead><tr><th>Blok</th><th>Anggota</th></tr></thead>
+          <tbody>
+            {% for row in by_blok %}
+            <tr><td>{{ row.blok }}</td><td>{{ row.total_keluarga }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="detail-section" style="flex: 1;">
+        <h3>Sebaran Kategori Usia</h3>
+        <table class="data-table">
+          <thead><tr><th>Kategori</th><th>Jumlah</th></tr></thead>
+          <tbody>
+            {% for row in by_status %}
+            <tr><td>{{ row.status }}</td><td>{{ row.total }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Birthdays this week -->
+    <div class="detail-section">
+      <h3>Ulang Tahun Pekan Ini</h3>
+      {% if birthdays %}
+      <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+        {% for item in birthdays %}
+        <div class="birthday-card {% if item.is_today %}birthday-card--today{% endif %}">
+          <p class="birthday-card__name">{{ item.member.nama_lengkap }}</p>
+          <p class="birthday-card__date">
+            {{ item.date|date:"j F" }}
+            {% if item.member.blok %} &middot; {{ item.member.blok }}{% endif %}
+            {% if item.is_today %} 🎂{% endif %}
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color: var(--color-muted, #888);">Tidak ada ulang tahun dalam 7 hari ke depan.</p>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
