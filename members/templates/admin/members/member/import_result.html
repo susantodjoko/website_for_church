@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>Import Selesai</h1>
+
+<p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+  ✅ Anggota baru: <strong>{{ result.imported }}</strong>
+  &nbsp;&nbsp;
+  🔄 Diperbarui: <strong>{{ result.updated }}</strong>
+  &nbsp;&nbsp;
+  ⏭ Dilewati: <strong>{{ result.skipped }}</strong>
+</p>
+
+{% if result.errors %}
+<h2>Baris dengan masalah ({{ result.errors|length }})</h2>
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ccc;">Baris</th>
+      <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ccc;">Nama</th>
+      <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ccc;">Alasan</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for err in result.errors %}
+    <tr>
+      <td style="padding: 0.4rem 0.5rem;">{{ err.row }}</td>
+      <td style="padding: 0.4rem 0.5rem;">{{ err.name }}</td>
+      <td style="padding: 0.4rem 0.5rem; color: #ba2121;">{{ err.reason }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p style="color: green;">Tidak ada kesalahan.</p>
+{% endif %}
+
+<p style="margin-top: 2rem;">
+  <a href="../" class="button">Kembali ke Daftar Member</a>
+</p>
+{% endblock %}

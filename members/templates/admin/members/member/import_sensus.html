@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>Import Sensus CSV</h1>
+<p>Unggah file .csv dari Google Form Sensus Warga GKJ Salatiga.</p>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <table>{{ form.as_table }}</table>
+  <p style="margin-top: 1rem;">
+    <input type="submit" value="Import" class="button default">
+    &nbsp;
+    <a href="../">Batal</a>
+  </p>
+</form>
+{% endblock %}
