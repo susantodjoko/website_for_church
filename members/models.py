@@ -103,6 +103,7 @@ class Member(models.Model):
     # Addresses
     alamat_domisili = models.TextField(blank=True)
     alamat_ktp = models.TextField(blank=True)
+    blok = models.CharField(max_length=10, choices=BLOK_CHOICES, blank=True, db_index=True)
 
     # Status
     status = models.CharField(max_length=20, choices=KATEGORI_USIA, default='Dewasa')

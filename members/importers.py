@@ -265,6 +265,7 @@ def _import_one(row, row_num, name, result):
         'nomor_telepon': _clean(row.get('No. telepon', '')),
         'alamat_domisili': _clean(row.get('Alamat domisili', '')),
         'alamat_ktp': _clean(row.get('Alamat sesuai KTP', '')),
+        'blok': blok,
         'status': _normalize_kategori_usia(row.get('Kategori usia', '')),
         'status_perkawinan': _normalize_status_perkawinan(row.get('Status perkawinan', '')),
         'kewargaan': _normalize_kewargaan(row.get('kategori kewargaan', '')),
