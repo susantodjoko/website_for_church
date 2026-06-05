@@ -1,4 +1,8 @@
+import csv
+import io
 from django.test import TestCase
+from django.contrib.auth.models import User
+from django.urls import reverse
 from .models import Keluarga, Member
 from members.forms import CsvImportForm
 
@@ -229,3 +233,79 @@ class CsvImportFormTest(TestCase):
         form = CsvImportForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn('csv_file', form.errors)
+
+
+class CsvImportAdminViewTest(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            username='admin', password='pass', email='a@a.com'
+        )
+        self.client.login(username='admin', password='pass')
+
+    def _csv_bytes(self):
+        rows = [{
+            'No. induk gereja (lihat surat baptisi/sidhi/nikah)': '55555',
+            'Nama lengkap': 'Test Warga',
+            'Jenis kelamin': 'perempuan',
+            'Tempat lahir (sesuai KTP)': 'Salatiga',
+            'Tanggal lahir (tanggal/bulan/tahun)': '01/06/1985',
+            'Alamat domisili': 'Jl. Admin 1',
+            'No. telepon': '',
+            'Alamat sesuai KTP': 'Jl. Admin 1',
+            'Blok (Kelompok PPA)': 'CK01',
+            'Status perkawinan': 'menikah',
+            'Kategori usia': 'dewasa (41-60 tahun)',
+            'kategori kewargaan': 'warga',
+            'Golongan darah': 'A',
+            'pendidikan terakhir': 'S1',
+            'No. KK (Kartu Kewargaan gereja) (diisi petugas)': '',
+            'status dalam keluarga': 'istri',
+            'pekerjaan': 'ASN',
+            'Status rumah tinggal': 'milik sendiri',
+            'Tempat kebaktian': 'induk',
+            'Jika di pertanyaan sebelumnya tempat kebaktian di gereja lain, isilah nama gerejanya dan kotanya': '',
+            'Status (iman)': 'dewasa',
+            'Baptis oleh (nama pembaptis) (lihat surat baptis)': '',
+            'tanggal baptis (lihat surat baptis)': '',
+            'sidhi oleh (nama pendeta) (lihat surat sidhi)': '',
+            'tanggal sidhi (lihat surat sidhi)': '',
+            'nikah oleh (lihat surat nikah)': '',
+            'tanggal nikah (lihat surat nikah)': '',
+            'tempat baptis (nama gereja) (lihat surat baptis)': '',
+            'tempat sidhi (nama gereja) (lihat surat sidhi)': '',
+            'tempat nikah (nama gereja/kota)': '',
+            'status kewargaan gereja': 'warga',
+            'Minat pelayanan gerejawi': '',
+            'minat pelayanan umum': '',
+        }]
+        buf = io.StringIO()
+        writer = csv.DictWriter(buf, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+        return buf.getvalue().encode('utf-8')
+
+    def test_get_import_page_returns_200(self):
+        url = reverse('admin:members_member_import_sensus')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Import Sensus CSV')
+
+    def test_post_valid_csv_shows_result(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        url = reverse('admin:members_member_import_sensus')
+        f = SimpleUploadedFile('sensus.csv', self._csv_bytes(), content_type='text/csv')
+        response = self.client.post(url, {'csv_file': f})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Import Selesai')
+        self.assertTrue(Member.objects.filter(no_sensus='55555').exists())
+
+    def test_member_changelist_has_import_button(self):
+        url = reverse('admin:members_member_changelist')
+        response = self.client.get(url)
+        self.assertContains(response, 'Import Sensus CSV')
+
+    def test_unauthenticated_redirects(self):
+        self.client.logout()
+        url = reverse('admin:members_member_import_sensus')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
