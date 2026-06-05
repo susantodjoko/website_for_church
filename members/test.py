@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import Keluarga, Member
+from members.forms import CsvImportForm
 
 
 class KeluargaModelTest(TestCase):
@@ -215,3 +216,16 @@ class ImportSensusRowsTest(TestCase):
         result = import_sensus_rows(rows)
         self.assertEqual(result.imported, 2)
         self.assertEqual(result.skipped, 1)
+
+
+class CsvImportFormTest(TestCase):
+    def test_valid_csv_file_accepted(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        f = SimpleUploadedFile('test.csv', b'col1,col2\nval1,val2', content_type='text/csv')
+        form = CsvImportForm(files={'csv_file': f})
+        self.assertTrue(form.is_valid())
+
+    def test_missing_file_invalid(self):
+        form = CsvImportForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('csv_file', form.errors)
