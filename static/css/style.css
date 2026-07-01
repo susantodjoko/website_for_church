@@ -23,9 +23,9 @@
   --space-xl:  4rem;
   --space-2xl: 6rem;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 16px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
 
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
@@ -320,7 +320,7 @@ ul { list-style: none; }
   border-top: 4px solid var(--color-primary);
 }
 
-.service-card--online { border-top-color: #27ae60; }
+.service-card--online { border-top-color: var(--color-accent); }
 
 .service-card__name { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; margin-bottom: var(--space-xs); }
 .service-card__times { font-size: 1rem; font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-xs); }
@@ -637,13 +637,13 @@ ul { list-style: none; }
 }
 
 .rich-content table th {
-  background: var(--color-surface);
+  background: var(--color-light);
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--color-text);
 }
 
 .rich-content table tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+  background: color-mix(in srgb, var(--color-light) 50%, transparent);
 }
 
 .rich-content table tr:hover td {
