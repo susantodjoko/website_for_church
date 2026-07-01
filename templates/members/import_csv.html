@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Import CSV — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="members-layout">
+  <div class="container" style="max-width: 700px;">
+
+    <div class="members-header">
+      <h1>Import Anggota via CSV</h1>
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline">&larr; Members</a>
+    </div>
+
+    {% if done %}
+      <div class="detail-section">
+        <h3>Hasil Import</h3>
+        <div class="detail-grid" style="margin-bottom: 1.5rem;">
+          <div class="stat-card">
+            <p class="stat-card__number" style="color: green;">{{ created }}</p>
+            <p class="stat-card__label">Anggota Baru</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__number" style="color: var(--color-primary);">{{ updated }}</p>
+            <p class="stat-card__label">Diperbarui</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__number" style="color: red;">{{ errors }}</p>
+            <p class="stat-card__label">Error</p>
+          </div>
+        </div>
+
+        {% if error_rows %}
+          <h4 style="margin-bottom: 0.75rem;">Detail Error:</h4>
+          <ul style="color: red; font-size: 0.9rem; padding-left: 1.5rem;">
+            {% for err in error_rows %}
+              <li>{{ err }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div style="margin-top: 1.5rem;">
+          <a href="{% url 'members:import_members_csv' %}" class="btn btn--primary">Upload Lagi</a>
+          <a href="{% url 'members:member_list' %}" class="btn btn--outline">Kembali ke Members</a>
+        </div>
+      </div>
+
+    {% else %}
+      <div class="detail-section">
+        <p style="color: var(--color-text-muted); margin-bottom: 1.5rem;">
+          Upload file CSV dengan format yang sama seperti hasil export.
+          Data yang sudah ada akan diperbarui berdasarkan No. Sensus.
+        </p>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem;">Pilih File CSV</label>
+            <input type="file" name="csv_file" accept=".csv" required>
+          </div>
+          <button type="submit" class="btn btn--primary">Upload & Import</button>
+          <a href="{% url 'members:export_members_csv' %}" class="btn btn--outline">Download Template CSV</a>
+        </form>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
-{% block title %}Plan Your Visit — GKJ Salatiga{% endblock %}
-
+{% block title %}Kunjungi — GKJ Salatiga{% endblock %}
+{% block meta_description %}Jadwal ibadah dan lokasi GKJ Salatiga. Rencanakan kunjungan Anda.{% endblock %}
+{% block og_title %}Kunjungi GKJ Salatiga{% endblock %}
+{% block og_description %}Jadwal ibadah dan lokasi GKJ Salatiga. Rencanakan kunjungan Anda.{% endblock %}
 {% block content %}
 <header class="page-header">
   <div class="container">
-    <h1 class="page-header__title">Plan Your Visit</h1>
-    <p class="page-header__sub">We'd love to have you join us this Sunday</p>
+    <h1 class="page-header__title">Rencanakan Kunjungan Anda</h1>
+    <p class="page-header__sub">Kami undang Anda bergabung dengan kami</p>
   </div>
 </header>
 
@@ -18,11 +20,35 @@
         <p class="service-card__times">{{ service.times }}</p>
         <p class="service-card__address">{{ service.address }}</p>
         <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }}</a>
+        {% if not service.is_online %}
+        <a href="https://www.google.com/maps/search/?api=1&query={{ service.address|urlencode }}"
+           target="_blank" rel="noopener" class="btn btn--outline" style="margin-top: 0.5rem;">
+          Petunjuk Arah →
+        </a>
+        {% endif %}
       </div>
       {% empty %}
-      <p style="color: var(--color-text-muted);">Service information coming soon.</p>
+      <p style="color: var(--color-text-muted);">Informasi Ibadah akan segera tersedia.</p>
       {% endfor %}
     </div>
   </div>
 </section>
+<section class="section section--light">
+  <div class="container">
+    <h2 class="section__title">Lokasi Kami</h2>
+    <div style="border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md);">
+      <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15087.192821890494!2d110.4807038!3d-7.3205563!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a783f998fbe55%3A0x2c4d6bb0f5a8a6a!2sJavanese%20Christian%20Church%2C%20Salatiga!5e1!3m2!1sen!2sid!4v1779700912078!5m2!1sen!2sid"
+       width="100%" 
+       height="450" 
+       style="border:0;"
+       display="block;" 
+       allowfullscreen
+       loading="lazy" 
+       referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

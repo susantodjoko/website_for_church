@@ -11,27 +11,34 @@
 
 <section class="section">
   <div class="container">
-    <div class="filter-bar">
-      <a href="{% url 'website:sermon_list' %}"
+
+    <!-- Search -->
+    <form method="get" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; max-width: 480px;">
+      {% if topic %}<input type="hidden" name="topic" value="{{ topic }}">{% endif %}
+      <input type="text" name="q" value="{{ query }}" placeholder="Cari judul, pendeta…"
+             style="flex: 1; padding: 0.55rem 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 0.95rem;">
+      <button type="submit" class="btn btn--primary" style="padding: 0.55rem 1rem;">Cari</button>
+      {% if query %}<a href="?{% if topic %}topic={{ topic }}{% endif %}" class="btn btn--outline" style="padding: 0.55rem 1rem;">✕</a>{% endif %}
+    </form>
+
+    <!-- Topic filter -->
+    <div class="filter-bar" style="margin-bottom: 1.5rem;">
+      <a href="{% url 'website:sermon_list' %}{% if query %}?q={{ query }}{% endif %}"
          class="filter-btn {% if not topic %}active{% endif %}">Semua</a>
-      <a href="?topic=faith"
-         class="filter-btn {% if topic == 'faith' %}active{% endif %}">Iman</a>
-      <a href="?topic=family"
-         class="filter-btn {% if topic == 'family' %}active{% endif %}">Keluarga</a>
-      <a href="?topic=purpose"
-         class="filter-btn {% if topic == 'purpose' %}active{% endif %}">Tujuan</a>
-      <a href="?topic=prayer"
-         class="filter-btn {% if topic == 'prayer' %}active{% endif %}">Doa</a>
+      {% for t in topics %}
+      <a href="?topic={{ t.id }}{% if query %}&q={{ query }}{% endif %}"
+         class="filter-btn {% if topic == t.id %}active{% endif %}">{{ t.name }}</a>
+      {% endfor %}
     </div>
 
     <div class="card-grid">
-      {% for sermon in sermons %}
+      {% for sermon in page %}
       <a href="{% url 'website:sermon_detail' sermon.slug %}" class="card">
         {% if sermon.thumbnail %}
           <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="card__img">
         {% endif %}
         <div class="card__body">
-          {% if sermon.topic %}<p class="card__tag">{{ sermon.get_topic_display }}</p>{% endif %}
+          {% if sermon.topic %}<p class="card__tag">{{ sermon.topic.name }}</p>{% endif %}
           <h3 class="card__title">{{ sermon.title }}</h3>
           <p class="card__meta">{{ sermon.pastor }} &middot; {{ sermon.date }}</p>
           <p class="card__text">{{ sermon.description|striptags|truncatewords:20 }}</p>
@@ -39,11 +46,27 @@
       </a>
       {% empty %}
       <div class="empty-state">
-        <p>Belum ada khotbah untuk topik ini.</p>
+        <p>Tidak ada khotbah yang ditemukan.</p>
         <a href="{% url 'website:sermon_list' %}" class="btn btn--outline">Lihat Semua Khotbah</a>
       </div>
       {% endfor %}
     </div>
+
+    <!-- Pagination -->
+    {% if page.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap;">
+      {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}{% if topic %}&topic={{ topic }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="btn btn--outline">← Sebelumnya</a>
+      {% endif %}
+      <span style="padding: 0.55rem 1rem; color: var(--color-text-muted);">
+        Halaman {{ page.number }} dari {{ page.paginator.num_pages }}
+      </span>
+      {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}{% if topic %}&topic={{ topic }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="btn btn--outline">Selanjutnya →</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
   </div>
 </section>
 {% endblock %}

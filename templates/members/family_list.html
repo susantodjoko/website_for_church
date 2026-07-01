@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Keluarga — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="members-layout">
+  <div class="container">
+
+    <div class="members-header">
+      <h1>Keluarga</h1>
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline">&larr; Members</a>
+    </div>
+
+    <form class="search-form" method="get" style="margin-bottom: 1.5rem;">
+      <input type="text" name="q" value="{{ query }}" placeholder="Search family name...">
+      <button type="submit" class="btn btn--primary">Search</button>
+    </form>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>No. KK Gereja</th>
+          <th>Nama Keluarga</th>
+          <th>Blok</th>
+          <th>Alamat</th>
+          <th>Jumlah Anggota</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for family in page %}
+        <tr>
+          <td>{{ family.no_kk_gereja }}</td>
+          <td><a href="{% url 'members:family_detail' family.pk %}">{{ family.nama_keluarga }}</a></td>
+          <td>{{ family.blok }}</td>
+          <td>{{ family.alamat|truncatechars:60 }}</td>
+          <td>{{ family.members.count }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="color: var(--color-text-muted);">No families found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      {% if page.has_previous %}
+        <a href="?page={{ page.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">&laquo; Prev</a>
+      {% endif %}
+      <span class="current">{{ page.number }} of {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="?page={{ page.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next &raquo;</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

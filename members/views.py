@@ -10,12 +10,32 @@ from .forms import MemberForm
 from django.shortcuts import render, get_object_or_404, redirect
 
 @login_required
+def staff_hub(request):
+    from datetime import date, timedelta
+    total_members = Member.objects.count()
+    total_keluarga = Keluarga.objects.count()
+    today = date.today()
+    week_days = [(today + timedelta(days=i)) for i in range(7)]
+    upcoming_birthdays = Member.objects.filter(
+        tanggal_lahir__isnull=False,
+    ).exclude(kewargaan='Meninggal').filter(
+        tanggal_lahir__month__in=[d.month for d in week_days],
+        tanggal_lahir__day__in=[d.day for d in week_days],
+    ).count()
+    return render(request, 'staff_hub.html', {
+        'total_members': total_members,
+        'total_keluarga': total_keluarga,
+        'upcoming_birthdays': upcoming_birthdays,
+    })
+
+
+@login_required
 def member_list(request):
     query = request.GET.get('q', '')
     blok = request.GET.get('blok', '')
     kewargaan = request.GET.get('kewargaan', '')
 
-    members = Member.objects.select_related('keluarga').all()
+    members = Member.objects.all()
     if query:
         members = members.filter(
             Q(nama_lengkap__icontains=query) | Q(no_sensus__icontains=query)
@@ -25,6 +45,7 @@ def member_list(request):
     if kewargaan:
         members = members.filter(kewargaan=kewargaan)
 
+    total_count = members.count()
     paginator = Paginator(members, 25)
     page = paginator.get_page(request.GET.get('page'))
     return render(request, 'members/member_list.html', {
@@ -32,6 +53,7 @@ def member_list(request):
         'query': query,
         'blok': blok,
         'kewargaan': kewargaan,
+        'total_count': total_count,
         'blok_choices': Member.objects.exclude(blok='').values_list('blok', flat=True).distinct().order_by('blok'),
         'kewargaan_choices': Member.KEWARGAAN_CHOICES,
     })
@@ -62,6 +84,26 @@ def member_detail(request, pk):
     return render(request, 'members/member_detail.html', {
         'member': member,
         'history_changes': history_changes,
+    })
+
+
+@login_required
+def print_blok(request):
+    blok = request.GET.get('blok', '')
+    kewargaan = request.GET.get('kewargaan', '')
+    members = Member.objects.all().order_by('blok', 'nama_lengkap')
+    if blok:
+        members = members.filter(blok=blok)
+    if kewargaan:
+        members = members.filter(kewargaan=kewargaan)
+    else:
+        members = members.exclude(kewargaan='Meninggal')
+    return render(request, 'members/print_blok.html', {
+        'members': members,
+        'blok': blok,
+        'kewargaan': kewargaan,
+        'blok_choices': Member.objects.exclude(blok='').values_list('blok', flat=True).distinct().order_by('blok'),
+        'kewargaan_choices': Member.KEWARGAAN_CHOICES,
     })
 
 

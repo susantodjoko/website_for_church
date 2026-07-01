@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
+from PIL import Image as PilImage
+import os
 
 # Create your models here.
 class HeroSlide(models.Model):
@@ -28,14 +30,17 @@ class SermonSeries(models.Model):
         return self.name
 
 
-class Sermon(models.Model):
-    TOPIC_CHOICES = [
-        ('faith', 'Faith'),
-        ('family', 'Family'),
-        ('purpose', 'Purpose'),
-        ('prayer', 'Prayer'),
-    ]
+class Topic(models.Model):
+    name = models.CharField(max_length=100)
 
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Sermon(models.Model):
     title = models.CharField(max_length=200)
     series = models.ForeignKey(
         SermonSeries, null=True, blank=True, on_delete=models.SET_NULL
@@ -46,7 +51,9 @@ class Sermon(models.Model):
     youtube_url = models.URLField()
     thumbnail = models.ImageField(upload_to='sermons/', blank=True)
     is_featured = models.BooleanField(default=False)
-    topic = models.CharField(max_length=50, choices=TOPIC_CHOICES, blank=True, db_index=True)
+    topic = models.ForeignKey(
+        Topic, null=True, blank=True, on_delete=models.SET_NULL, db_index=True
+    )
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     slug = models.SlugField(max_length=220, unique=True, blank=True)
 
@@ -113,6 +120,18 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.image:
+            path = self.image.path
+            img = PilImage.open(path)
+            # Resize if wider than 1200px, preserving aspect ratio
+            if img.width > 1200:
+                ratio = 1200 / img.width
+                new_size = (1200, int(img.height * ratio))
+                img = img.resize(new_size, PilImage.LANCZOS)
+                img.save(path, optimize=True, quality=85)
+
 
 class AboutPage(models.Model):
     mission_statement = models.TextField()
@@ -137,11 +156,27 @@ class AboutValue(models.Model):
         return self.title
     
 
+class Pendeta(models.Model):
+    page = models.ForeignKey(AboutPage, on_delete=models.CASCADE, related_name='pendeta')
+    nama = models.CharField(max_length=100)
+    jabatan = models.CharField(max_length=100, default='Gembala Jemaat')
+    bio = models.TextField(blank=True)
+    foto = models.ImageField(upload_to='about/', blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.nama
+
+
 class WartaJemaat(models.Model):
     CATEGORY_CHOICES = [
         ('warta', 'Warta Mingguan'),
         ('pengumuman', 'Pengumuman'),
         ('liturgi', 'Liturgi'),
+        ('bahan', 'Bahan'),
     ]
 
     title = models.CharField(max_length=200)

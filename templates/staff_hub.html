@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Staff Portal — GKJ Salatiga{% endblock %}
+
+{% block extra_css %}
+<style>
+  body { background: #f1f3f6; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="background: #fff; border-bottom: 1px solid var(--color-border); padding: 2rem 0; margin-top: 70px;">
+  <div class="container">
+    <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.25rem;">Selamat datang,</p>
+    <h1 style="font-size: 1.75rem; font-weight: 800; margin: 0;">{{ request.user.get_full_name|default:request.user.username }}</h1>
+  </div>
+</div>
+
+<!-- Quick stats -->
+<div style="background: var(--color-primary); color: #fff; padding: 1.25rem 0;">
+  <div class="container">
+    <div style="display: flex; gap: 2.5rem; flex-wrap: wrap;">
+      <div>
+        <p style="font-size: 1.75rem; font-weight: 800; margin: 0;">{{ total_members }}</p>
+        <p style="font-size: 0.8rem; opacity: 0.8; margin: 0;">Total Anggota</p>
+      </div>
+      <div>
+        <p style="font-size: 1.75rem; font-weight: 800; margin: 0;">{{ total_keluarga }}</p>
+        <p style="font-size: 0.8rem; opacity: 0.8; margin: 0;">Keluarga</p>
+      </div>
+      {% if upcoming_birthdays %}
+      <div>
+        <p style="font-size: 1.75rem; font-weight: 800; margin: 0;">{{ upcoming_birthdays }}</p>
+        <p style="font-size: 0.8rem; opacity: 0.8; margin: 0;">Ulang Tahun Pekan Ini</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; align-items: start;">
+
+      <!-- Anggota card -->
+      <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: #fff;">
+        <div style="background: var(--color-primary); padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <h2 style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;">Manajemen Anggota</h2>
+        </div>
+        <div style="padding: 0.5rem 0;">
+          <a href="{% url 'members:dashboard' %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">📊</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Dashboard</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Statistik & ulang tahun</p>
+            </div>
+          </a>
+          <a href="{% url 'members:member_list' %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">👤</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Daftar Anggota</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Cari, filter, dan edit data anggota</p>
+            </div>
+          </a>
+          <a href="{% url 'members:family_list' %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">🏠</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Keluarga</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Daftar kartu keluarga gereja</p>
+            </div>
+          </a>
+          <a href="{% url 'members:export_members_csv' %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">⬇️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Export CSV</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Unduh data anggota</p>
+            </div>
+          </a>
+          <a href="{% url 'admin:members_member_import_sensus' %}" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">⬆️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Import Sensus CSV</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Unggah data sensus jemaat</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Website card -->
+      <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: #fff;">
+        <div style="background: #1e293b; padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+          </svg>
+          <h2 style="color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;">Konten Website</h2>
+        </div>
+        <div style="padding: 0.5rem 0;">
+          <a href="/admin/website/sermon/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">🎙️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Khotbah</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Kelola rekaman khotbah</p>
+            </div>
+          </a>
+          <a href="/admin/website/wartajemaat/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">📄</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Publikasi</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Warta, bahan, dan pengumuman</p>
+            </div>
+          </a>
+          <a href="/admin/website/event/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">📅</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Kegiatan</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Acara dan kegiatan gereja</p>
+            </div>
+          </a>
+          <a href="/admin/website/album/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">🖼️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Galeri</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Album dan foto</p>
+            </div>
+          </a>
+          <a href="/admin/website/aboutpage/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">ℹ️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Tentang</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Visi, misi, pendeta, nilai-nilai</p>
+            </div>
+          </a>
+          <div style="margin: 0.5rem 1.5rem 0.5rem; border-top: 1px solid var(--color-border);"></div>
+          <a href="/admin/" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; text-decoration: none; color: var(--color-text); transition: background 0.15s;" onmouseover="this.style.background='var(--color-surface)'" onmouseout="this.style.background='transparent'">
+            <span style="font-size: 1.1rem;">⚙️</span>
+            <div>
+              <p style="font-weight: 600; margin: 0; font-size: 0.95rem;">Admin Panel Lengkap</p>
+              <p style="color: var(--color-text-muted); font-size: 0.8rem; margin: 0;">Semua pengaturan Django admin</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

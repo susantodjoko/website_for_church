@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Persembahan Online — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Persembahan Online</h1>
+    <p class="page-header__sub">Terima kasih atas kepercayaan dan kesetiaan Anda dalam memberi</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" style="max-width: 760px;">
+
+    <!-- Intro -->
+    <div style="background: var(--color-surface); border-radius: 12px; padding: 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--color-border);">
+      <p style="margin: 0; line-height: 1.7;">
+        Persembahan Anda merupakan wujud syukur kepada Tuhan dan dukungan bagi pelayanan GKJ Salatiga.
+        Silakan transfer melalui rekening di bawah ini atau gunakan QRIS.
+        Cantumkan <strong>nama lengkap</strong> Anda sebagai berita transfer.
+      </p>
+    </div>
+
+    <!-- Bank Transfer -->
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Transfer Bank</h2>
+    <div style="display: grid; gap: 1rem; margin-bottom: 2.5rem;">
+
+      <div style="border: 1px solid var(--color-border); border-radius: 12px; padding: 1.25rem 1.5rem; display: flex; gap: 1.25rem; align-items: flex-start;">
+        <div style="width: 48px; height: 48px; background: #f05a24; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <span style="color: #fff; font-weight: 800; font-size: 0.65rem; letter-spacing: 0.02em;">BRI</span>
+        </div>
+        <div>
+          <p style="font-weight: 700; margin: 0 0 0.15rem;">Bank BRI</p>
+          <p style="font-size: 1.25rem; font-family: monospace; font-weight: 700; letter-spacing: 0.05em; margin: 0 0 0.15rem;">1234-5678</p>
+          <p style="color: var(--color-text-muted); margin: 0; font-size: 0.9rem;">a.n. GKJ Salatiga</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QRIS -->
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">QRIS</h2>
+    <div style="border: 1px solid var(--color-border); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2.5rem;">
+      {% load static %}
+      <img src="{% static 'images/qris_persembahan.png' %}" alt="QRIS Persembahan GKJ Salatiga"
+           style="width: 220px; height: auto; display: block; margin: 0 auto 1rem;">
+      <p style="color: var(--color-text-muted); font-size: 0.9rem; margin: 0;">
+        Scan dengan aplikasi perbankan atau dompet digital Anda
+      </p>
+    </div>
+
+    <!-- Notes -->
+    <div style="background: #fefce8; border: 1px solid #fde68a; border-radius: 12px; padding: 1.25rem 1.5rem;">
+      <p style="font-weight: 700; margin: 0 0 0.5rem;">Catatan</p>
+      <ul style="margin: 0; padding-left: 1.25rem; color: var(--color-text-muted); line-height: 1.8; font-size: 0.9rem;">
+        <li>Cantumkan <strong>nama lengkap</strong> Anda sebagai berita transfer</li>
+        <li>Untuk perpuluhan, tambahkan keterangan "Perpuluhan" pada berita transfer</li>
+        <li>Bukti transfer dapat disampaikan kepada bendahara gereja</li>
+        <li>Pertanyaan: hubungi sekretariat via <a href="https://wa.me/6281325425999" target="_blank" rel="noopener" style="color: #25d366; font-weight: 600;">WhatsApp</a></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

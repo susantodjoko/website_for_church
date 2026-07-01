@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Daftar Anggota{% if blok %} — Blok {{ blok }}{% endif %} — GKJ Salatiga</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color: #111; background: #fff; }
+
+    .print-header { border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .print-header h1 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+    .print-header p { font-size: 10px; color: #555; }
+    .print-meta { text-align: right; font-size: 10px; color: #555; }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #1a1a2e; color: #fff; }
+    th { padding: 6px 8px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+    td { padding: 6px 8px; border-bottom: 1px solid #e5e5e5; vertical-align: top; }
+    tr:nth-child(even) td { background: #f8f9fa; }
+    .no-col { width: 30px; color: #999; }
+    .sensus-col { width: 80px; font-family: monospace; font-size: 10px; }
+    .name-col { font-weight: 600; }
+    .blok-col { width: 50px; text-align: center; }
+    .status-col { width: 80px; font-size: 10px; color: #555; }
+    .kewargaan-col { width: 80px; font-size: 10px; }
+    .phone-col { font-family: monospace; font-size: 10px; color: #333; }
+
+    .summary { margin-top: 16px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 10px; color: #555; }
+    .no-print-header { background: #f1f3f6; padding: 12px 20px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #ddd; }
+    .no-print-header select, .no-print-header button { padding: 5px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; }
+    .no-print-header button { background: #1a1a2e; color: #fff; border: none; }
+    .page-wrap { padding: 20px 24px; }
+
+    @media print {
+      .no-print-header { display: none !important; }
+      .page-wrap { padding: 8mm 10mm; }
+      thead { display: table-header-group; }
+      tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Controls (hidden on print) -->
+<div class="no-print-header">
+  <strong style="font-size: 12px;">Cetak Daftar Anggota</strong>
+  <form method="get" style="display: flex; gap: 8px; align-items: center;">
+    <select name="blok" onchange="this.form.submit()">
+      <option value="">Semua Blok</option>
+      {% for b in blok_choices %}
+      <option value="{{ b }}" {% if blok == b %}selected{% endif %}>Blok {{ b }}</option>
+      {% endfor %}
+    </select>
+    <select name="kewargaan" onchange="this.form.submit()">
+      <option value="">Semua Kewargaan</option>
+      {% for value, label in kewargaan_choices %}
+      <option value="{{ value }}" {% if kewargaan == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <button onclick="window.print()">🖨️ Print / Simpan PDF</button>
+  <a href="{% url 'members:member_list' %}" style="font-size: 11px; color: #555;">← Kembali</a>
+</div>
+
+<div class="page-wrap">
+  <div class="print-header">
+    <div>
+      <h1>Daftar Anggota GKJ Salatiga{% if blok %} — Blok {{ blok }}{% endif %}</h1>
+      <p>Gereja Kristen Jawa Salatiga · Jl. P. Diponegoro No. 55</p>
+      {% if kewargaan %}<p>Filter: {{ kewargaan }}</p>{% endif %}
+    </div>
+    <div class="print-meta">
+      <p>Jumlah: {{ members|length }} anggota</p>
+      <p id="print-date"></p>
+      <script>document.getElementById('print-date').textContent = 'Dicetak: ' + new Date().toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'});</script>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="no-col">No</th>
+        <th class="sensus-col">No. Sensus</th>
+        <th class="name-col">Nama Lengkap</th>
+        <th>Tempat, Tgl Lahir</th>
+        <th class="blok-col">Blok</th>
+        <th class="status-col">Kategori</th>
+        <th class="kewargaan-col">Kewargaan</th>
+        <th class="phone-col">Telepon</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td class="no-col">{{ forloop.counter }}</td>
+        <td class="sensus-col">{{ m.no_sensus }}</td>
+        <td class="name-col">{{ m.nama_lengkap }}</td>
+        <td>
+          {{ m.tempat_lahir|default:"" }}{% if m.tempat_lahir and m.tanggal_lahir %}, {% endif %}{{ m.tanggal_lahir|default:"—" }}
+        </td>
+        <td class="blok-col">{{ m.blok|default:"—" }}</td>
+        <td class="status-col">{{ m.status|default:"—" }}</td>
+        <td class="kewargaan-col">{{ m.kewargaan }}</td>
+        <td class="phone-col">{{ m.nomor_telepon|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" style="text-align:center; padding: 20px; color: #999;">Tidak ada anggota ditemukan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="summary">
+    Total: {{ members|length }} anggota
+    {% if blok %} · Blok {{ blok }}{% endif %}
+    {% if kewargaan %} · {{ kewargaan }}{% endif %}
+  </div>
+</div>
+
+</body>
+</html>

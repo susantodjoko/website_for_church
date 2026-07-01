@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py makemigrations website)",
+      "Bash(python manage.py check)",
+      "Bash(python manage.py makemigrations website --name remove_liturgi_model)",
+      "Bash(python manage.py migrate)",
+      "Bash(python manage.py makemigrations website --name remove_news_model)",
+      "Bash(python manage.py makemigrations website --name flexible_about_values)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\user\\\\Documents\\\\django_web\\\\members\\\\migrations\\\\\" -Filter \"*.py\" | Select-Object -ExpandProperty Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\user\\\\Documents\\\\django_web\\\\website\\\\migrations\\\\\" -Filter \"*.py\" | Select-Object -ExpandProperty Name)",
+      "Bash(Get-ChildItem \"C:\\\\Users\\\\user\\\\Documents\\\\django_web\\\\members\\\\migrations\")",
+      "Bash(Select-Object Name)"
+    ]
+  }
+}

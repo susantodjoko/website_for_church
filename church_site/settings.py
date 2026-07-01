@@ -10,18 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load .env file if present (development convenience)
+_env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    for _line in _env_file.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith('#') and '=' in _line:
+            _k, _v = _line.split('=', 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-#9ug)g5(dm82p*k$7$sb6e)zeb(zbhovnkoc)^wb5#+&=krj+8"
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -119,6 +128,16 @@ USE_TZ = True
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
+# Use the lightweight lite theme — no Bootstrap CDN dependency
+SUMMERNOTE_THEME = 'lite'
+
+SUMMERNOTE_CONFIG = {
+    # Render inline in the page (no iframe = no CDN loading at all)
+    'iframe': False,
+    'attachment_require_authentication': True,
+    'attachment_filesize_limit': 5 * 1024 * 1024,  # 5 MB
+}
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -128,6 +147,10 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Allow uploads up to 20 MB in memory before writing to disk
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 
 LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/members/"

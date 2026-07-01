@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Edit {{ member.nama_lengkap }} — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<div class="members-layout">
+  <div class="container" style="max-width: 800px;">
+
+    <div class="members-header">
+      <h1>Edit Anggota</h1>
+      <a href="{% url 'members:member_detail' member.pk %}" class="btn btn--outline">&larr; Kembali</a>
+    </div>
+    <p style="color: var(--color-text-muted); margin-bottom: 2rem;">No. Sensus: {{ member.no_sensus }}</p>
+
+    <form method="post" class="edit-form">
+      {% csrf_token %}
+
+      <div class="detail-section">
+        <h3>Data Pribadi</h3>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.nama_lengkap %}
+          {% include "members/_field.html" with field=form.jenis_kelamin %}
+          {% include "members/_field.html" with field=form.tempat_lahir %}
+          {% include "members/_field.html" with field=form.tanggal_lahir %}
+          {% include "members/_field.html" with field=form.gol_darah %}
+          {% include "members/_field.html" with field=form.status %}
+          {% include "members/_field.html" with field=form.status_perkawinan %}
+          {% include "members/_field.html" with field=form.pendidikan %}
+          {% include "members/_field.html" with field=form.pekerjaan %}
+          {% include "members/_field.html" with field=form.nomor_telepon %}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Alamat &amp; Keluarga</h3>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.alamat_domisili %}
+          {% include "members/_field.html" with field=form.alamat_ktp %}
+          {% include "members/_field.html" with field=form.blok %}
+          {% include "members/_field.html" with field=form.keluarga %}
+          {% include "members/_field.html" with field=form.ket_status %}
+          {% include "members/_field.html" with field=form.status_rumah_tinggal %}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Iman</h3>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.kewargaan %}
+          {% include "members/_field.html" with field=form.tempat_kebaktian %}
+          {% include "members/_field.html" with field=form.nama_gereja_lain %}
+        </div>
+
+        <h4 style="margin: 1.25rem 0 0.5rem;">Baptis</h4>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.sudah_baptis %}
+          {% include "members/_field.html" with field=form.baptis_oleh %}
+          {% include "members/_field.html" with field=form.tanggal_baptis %}
+          {% include "members/_field.html" with field=form.tempat_baptis %}
+        </div>
+
+        <h4 style="margin: 1.25rem 0 0.5rem;">Sidi</h4>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.sudah_sidi %}
+          {% include "members/_field.html" with field=form.sidi_oleh %}
+          {% include "members/_field.html" with field=form.tanggal_sidi %}
+          {% include "members/_field.html" with field=form.tempat_sidi %}
+        </div>
+
+        <h4 style="margin: 1.25rem 0 0.5rem;">Nikah</h4>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.nikah_oleh %}
+          {% include "members/_field.html" with field=form.tanggal_nikah %}
+          {% include "members/_field.html" with field=form.tempat_nikah %}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Pelayanan</h3>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.minat_pelayanan_gerejawi %}
+          {% include "members/_field.html" with field=form.minat_pelayanan_umum %}
+          {% include "members/_field.html" with field=form.pelayanan_diikuti %}
+          {% include "members/_field.html" with field=form.ibadah_sering_diikuti %}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h3>Lainnya</h3>
+        <div class="form-grid">
+          {% include "members/_field.html" with field=form.tanggal_wafat %}
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <button type="submit" class="btn btn--primary">Simpan Perubahan</button>
+        <a href="{% url 'members:member_detail' member.pk %}" class="btn btn--outline">Batal</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

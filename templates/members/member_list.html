@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}Daftar Anggota — GKJ Salatiga{% endblock %}
+
+{% block extra_css %}
+<style>
+  body { background: #f1f3f6; }
+  .member-row {
+    display: flex; align-items: center; gap: 1rem;
+    background: #fff; border: 1px solid var(--color-border);
+    border-radius: 10px; padding: 0.85rem 1.1rem;
+    text-decoration: none; color: var(--color-text);
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .member-row:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-color: var(--color-primary); }
+  .member-avatar {
+    width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+    background: var(--color-primary); display: flex; align-items: center;
+    justify-content: center; font-weight: 700; color: #fff; font-size: 1rem;
+  }
+  .member-avatar--p { background: #be185d; }
+  .member-name { font-weight: 700; font-size: 0.95rem; margin: 0 0 0.15rem; }
+  .member-meta { font-size: 0.8rem; color: var(--color-text-muted); margin: 0; }
+  .member-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-left: auto; flex-shrink: 0; }
+  .chip {
+    font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.55rem;
+    border-radius: 99px; border: 1px solid var(--color-border);
+    color: var(--color-text-muted); background: var(--color-surface);
+    white-space: nowrap;
+  }
+  .chip--blok { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+  .chip--warga { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+  .chip--simpatisan { background: #fefce8; border-color: #fde68a; color: #b45309; }
+  .chip--titipan, .chip--luarkota { background: #f5f3ff; border-color: #ddd6fe; color: #6d28d9; }
+  .chip--tamu { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+  .chip--meninggal { background: #f9fafb; border-color: #e5e7eb; color: #9ca3af; }
+  .filter-select {
+    padding: 0.5rem 0.85rem; border: 1px solid var(--color-border);
+    border-radius: 8px; font-size: 0.9rem; background: #fff;
+    color: var(--color-text); cursor: pointer;
+  }
+  .filter-select:focus { outline: none; border-color: var(--color-primary); }
+  .actions-dropdown { position: relative; display: inline-block; }
+  .actions-menu {
+    display: none; position: absolute; right: 0; top: calc(100% + 4px);
+    background: #fff; border: 1px solid var(--color-border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1); min-width: 180px; z-index: 50; overflow: hidden;
+  }
+  .actions-dropdown:focus-within .actions-menu { display: block; }
+  .actions-menu a {
+    display: block; padding: 0.7rem 1rem; font-size: 0.875rem;
+    color: var(--color-text); text-decoration: none;
+  }
+  .actions-menu a:hover { background: var(--color-surface); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="background: #fff; border-bottom: 1px solid var(--color-border); padding: 1.25rem 0; margin-top: 70px;">
+  <div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <p style="font-size: 0.75rem; color: var(--color-text-muted); margin: 0 0 0.1rem;">
+          <a href="{% url 'members:staff_hub' %}" style="color: var(--color-text-muted); text-decoration: none;">Staff Portal</a> /
+        </p>
+        <h1 style="font-size: 1.4rem; font-weight: 800; margin: 0;">Daftar Anggota</h1>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+        <a href="{% url 'members:print_blok' %}{% if blok %}?blok={{ blok }}{% endif %}"
+           target="_blank"
+           class="btn btn--outline" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+          🖨️ Cetak Blok
+        </a>
+        <a href="{% url 'members:dashboard' %}" class="btn btn--outline">Dashboard</a>
+        <div class="actions-dropdown" tabindex="0">
+          <button class="btn btn--outline" style="display: flex; align-items: center; gap: 0.4rem;">
+            Aksi <span style="font-size: 0.7rem;">▾</span>
+          </button>
+          <div class="actions-menu">
+            <a href="{% url 'members:export_members_csv' %}">⬇️ Export CSV</a>
+            <a href="{% url 'members:import_members_csv' %}">⬆️ Import CSV</a>
+            <a href="{% url 'members:family_list' %}">🏠 Keluarga</a>
+            <a href="/admin/">⚙️ Admin Panel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="padding-top: 1.5rem; padding-bottom: 3rem;">
+
+  <!-- Filter bar -->
+  <form method="get" id="filter-form" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center;">
+    <input type="text" name="q" value="{{ query }}" placeholder="Cari nama atau no. sensus…"
+           style="flex: 1; min-width: 200px; padding: 0.55rem 0.9rem; border: 1px solid var(--color-border); border-radius: 8px; font-size: 0.9rem; background: #fff;">
+    <select name="blok" class="filter-select" onchange="document.getElementById('filter-form').submit()">
+      <option value="">Semua Blok</option>
+      {% for b in blok_choices %}
+      <option value="{{ b }}" {% if blok == b %}selected{% endif %}>Blok {{ b }}</option>
+      {% endfor %}
+    </select>
+    <select name="kewargaan" class="filter-select" onchange="document.getElementById('filter-form').submit()">
+      <option value="">Semua Kewargaan</option>
+      {% for value, label in kewargaan_choices %}
+      <option value="{{ value }}" {% if kewargaan == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn--primary">Cari</button>
+    {% if query or blok or kewargaan %}
+    <a href="{% url 'members:member_list' %}" class="btn btn--outline">Reset</a>
+    {% endif %}
+  </form>
+
+  <!-- Result count -->
+  <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+    Menampilkan <strong>{{ page.start_index }}–{{ page.end_index }}</strong> dari <strong>{{ total_count }}</strong> anggota
+    {% if blok %} · Blok <strong>{{ blok }}</strong>{% endif %}
+    {% if kewargaan %} · <strong>{{ kewargaan }}</strong>{% endif %}
+  </p>
+
+  <!-- Member rows -->
+  <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+    {% for member in page %}
+    <a href="{% url 'members:member_detail' member.pk %}" class="member-row">
+      <div class="member-avatar {% if member.jenis_kelamin == 'P' %}member-avatar--p{% endif %}">
+        {{ member.nama_lengkap|first|upper }}
+      </div>
+      <div style="min-width: 0;">
+        <p class="member-name">{{ member.nama_lengkap }}</p>
+        <p class="member-meta">
+          {{ member.no_sensus }}
+          {% if member.nomor_telepon %} &middot; {{ member.nomor_telepon }}{% endif %}
+          {% if member.status %} &middot; {{ member.status }}{% endif %}
+        </p>
+      </div>
+      <div class="member-badges">
+        {% if member.blok %}
+        <span class="chip chip--blok">{{ member.blok }}</span>
+        {% endif %}
+        <span class="chip chip--{{ member.kewargaan|lower|cut:' ' }}">{{ member.kewargaan }}</span>
+      </div>
+    </a>
+    {% empty %}
+    <div style="text-align: center; padding: 3rem; background: #fff; border-radius: 10px; border: 1px solid var(--color-border);">
+      <p style="color: var(--color-text-muted); margin: 0;">Tidak ada anggota ditemukan.</p>
+      <a href="{% url 'members:member_list' %}" class="btn btn--outline" style="margin-top: 1rem;">Reset Filter</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page.has_other_pages %}
+  <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap;">
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if blok %}&blok={{ blok }}{% endif %}{% if kewargaan %}&kewargaan={{ kewargaan }}{% endif %}" class="btn btn--outline">← Sebelumnya</a>
+    {% endif %}
+    <span style="padding: 0.5rem 1rem; font-size: 0.875rem; color: var(--color-text-muted);">
+      Halaman {{ page.number }} dari {{ page.paginator.num_pages }}
+    </span>
+    {% if page.has_next %}
+    <a href="?page={{ page.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if blok %}&blok={{ blok }}{% endif %}{% if kewargaan %}&kewargaan={{ kewargaan }}{% endif %}" class="btn btn--outline">Selanjutnya →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

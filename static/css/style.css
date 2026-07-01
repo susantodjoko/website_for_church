@@ -300,12 +300,15 @@ ul { list-style: none; }
    SERVICE TIMES
    =========================== */
 .service-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-md);
 }
 
 .service-card {
+  flex: 0 1 300px;
+  min-width: 260px;
   background: var(--color-light);
   border-radius: var(--radius-md);
   padding: var(--space-lg);

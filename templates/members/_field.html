@@ -1,0 +1,5 @@
+<div class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-group--checkbox{% endif %}">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% if field.errors %}<p class="form-error">{{ field.errors|join:", " }}</p>{% endif %}
+</div>

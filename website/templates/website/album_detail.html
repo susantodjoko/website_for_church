@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% block title %}{{ album.title }} — GKJ Salatiga{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Clickable grid thumbnails */
+  .photo-item img { cursor: zoom-in; }
+
+  /* Lightbox overlay */
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.92);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #lightbox.open { display: flex; }
+
+  #lightbox-img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+    cursor: grab;
+    user-select: none;
+  }
+  #lightbox-img.zoomed { cursor: grab; }
+
+  #lightbox-caption {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
+    text-align: center;
+    max-width: 600px;
+  }
+
+  /* Toolbar */
+  #lightbox-toolbar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .lb-btn {
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .lb-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* Prev / Next arrows */
+  .lb-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .lb-arrow:hover { background: rgba(255,255,255,0.3); }
+  #lb-prev { left: 1rem; }
+  #lb-next { right: 1rem; }
+
+  /* Zoom controls */
+  #lb-zoom-level {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8rem;
+    align-self: center;
+    min-width: 40px;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">{{ album.title }}</h1>
+    <p class="page-header__sub">{{ album.date }}</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="photo-grid">
+      {% for photo in photos %}
+      <div class="photo-item" onclick="openLightbox({{ forloop.counter0 }})">
+        <img src="{{ photo.image.url }}" alt="{{ photo.caption|default:'' }}" loading="lazy">
+        {% if photo.caption %}
+          <p class="photo-caption">{{ photo.caption }}</p>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p style="color: var(--color-text-muted);">Belum ada foto.</p>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <a href="{% url 'website:gallery' %}" class="btn btn--outline">&larr; Kembali ke Gallery</a>
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Foto viewer">
+  <!-- Toolbar: zoom out, zoom level, zoom in, download, close -->
+  <div id="lightbox-toolbar">
+    <button class="lb-btn" id="lb-zoom-out" title="Zoom out">−</button>
+    <span id="lb-zoom-level">100%</span>
+    <button class="lb-btn" id="lb-zoom-in" title="Zoom in">+</button>
+    <a class="lb-btn" id="lb-download" title="Download" download>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+    </a>
+    <button class="lb-btn" id="lb-close" title="Tutup (Esc)">✕</button>
+  </div>
+
+  <button class="lb-arrow" id="lb-prev" title="Sebelumnya">‹</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lb-arrow" id="lb-next" title="Selanjutnya">›</button>
+
+  <p id="lightbox-caption"></p>
+</div>
+
+{% block extra_js %}
+<script>
+const photos = [
+  {% for photo in photos %}
+  { src: "{{ photo.image.url }}", caption: "{{ photo.caption|default:''|escapejs }}" }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+let current = 0;
+let scale = 1;
+const MIN_SCALE = 1, MAX_SCALE = 4;
+
+const lb       = document.getElementById('lightbox');
+const lbImg    = document.getElementById('lightbox-img');
+const lbCap    = document.getElementById('lightbox-caption');
+const lbDl     = document.getElementById('lb-download');
+const lbZoomLv = document.getElementById('lb-zoom-level');
+
+function setScale(s) {
+  scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
+  lbImg.style.transform = `scale(${scale})`;
+  lbZoomLv.textContent = Math.round(scale * 100) + '%';
+}
+
+function loadPhoto(idx) {
+  current = (idx + photos.length) % photos.length;
+  const p = photos[current];
+  lbImg.src = p.src;
+  lbImg.alt = p.caption;
+  lbCap.textContent = p.caption;
+  lbDl.href = p.src;
+  lbDl.download = p.src.split('/').pop();
+  setScale(1);
+}
+
+function openLightbox(idx) {
+  loadPhoto(idx);
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', () => loadPhoto(current - 1));
+document.getElementById('lb-next').addEventListener('click', () => loadPhoto(current + 1));
+document.getElementById('lb-zoom-in').addEventListener('click', () => setScale(scale + 0.5));
+document.getElementById('lb-zoom-out').addEventListener('click', () => setScale(scale - 0.5));
+
+/* Click outside image to close */
+lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+/* Keyboard */
+document.addEventListener('keydown', e => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowRight')  loadPhoto(current + 1);
+  if (e.key === 'ArrowLeft')   loadPhoto(current - 1);
+  if (e.key === '+')           setScale(scale + 0.5);
+  if (e.key === '-')           setScale(scale - 0.5);
+});
+
+/* Scroll wheel zoom */
+lbImg.addEventListener('wheel', e => {
+  e.preventDefault();
+  setScale(scale + (e.deltaY < 0 ? 0.2 : -0.2));
+}, { passive: false });
+</script>
+{% endblock %}
+{% endblock %}

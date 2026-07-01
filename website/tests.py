@@ -71,8 +71,8 @@ class SermonListViewTest(TestCase):
             description='', youtube_url='https://youtube.com/watch?v=xyz', topic='family'
         )
         response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
-        self.assertEqual(len(response.context['sermons']), 1)
-        self.assertEqual(response.context['sermons'][0].title, 'Faith Talk')
+        self.assertEqual(len(response.context['page'].object_list), 1)
+        self.assertEqual(response.context['page'].object_list[0].title, 'Faith Talk')
 
 
 class SermonTimestampTest(TestCase):
@@ -243,7 +243,7 @@ class AboutContactCTATest(TestCase):
             pastor_bio='Bio pendeta.'
         )
         response = self.client.get(reverse('website:about'))
-        self.assertContains(response, 'Kunjungi Kami')
+        self.assertContains(response, 'Jam &amp; Lokasi')
         self.assertContains(response, 'Kirim Pesan')
 
 

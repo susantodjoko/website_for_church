@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
-from .models import HeroSlide, Sermon, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
+from django.db.models import Q
+from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
 from django.core.paginator import Paginator
 from .forms import ContactForm
 from datetime import date, timedelta
@@ -35,11 +36,26 @@ def home(request):
 
 
 def sermon_list(request):
-    topic = request.GET.get('topic', '')
+    try:
+        topic_id = int(request.GET.get('topic', ''))
+    except (ValueError, TypeError):
+        topic_id = None
+    query = request.GET.get('q', '')
     sermons = Sermon.objects.all()
-    if topic:
-        sermons = sermons.filter(topic=topic)
-    return render(request, 'website/sermons.html', {'sermons': sermons, 'topic': topic})
+    if topic_id:
+        sermons = sermons.filter(topic_id=topic_id)
+    if query:
+        sermons = sermons.filter(
+            Q(title__icontains=query) | Q(pastor__icontains=query) | Q(description__icontains=query)
+        )
+    paginator = Paginator(sermons, 12)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'website/sermons.html', {
+        'page': page,
+        'topic': topic_id,
+        'query': query,
+        'topics': Topic.objects.all(),
+    })
 
 
 def sermon_detail(request, slug):
@@ -131,6 +147,10 @@ def album_detail(request, slug):
         'album': album,
         'photos': photos,
     })
+
+def giving(request):
+    return render(request, 'website/giving.html')
+
 
 def contact(request):
     if request.method == 'POST':

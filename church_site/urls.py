@@ -18,11 +18,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from church_site.admin_sites import content_admin, members_admin
 
 urlpatterns = [
+    # Superuser admin (users, groups, full access)
     path('admin/', admin.site.urls),
+    # Content editors: sermons, warta, gallery, events, about
+    path('konten/', content_admin.urls),
+    # Member staff: census, families, dashboard
+    path('jemaat/', members_admin.urls),
     path('', include('website.urls')),
     path('members/', include('members.urls')),
+    path('summernote/', include('django_summernote.urls')),
 ]
 
 if settings.DEBUG:

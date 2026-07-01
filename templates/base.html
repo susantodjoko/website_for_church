@@ -31,7 +31,7 @@
     <li><a href="{% url 'website:sermon_list' %}"
        class="{% if request.resolver_match.url_name == 'sermon_list' or request.resolver_match.url_name == 'sermon_detail' %}active{% endif %}">Khotbah</a></li>
     <li><a href="{% url 'website:warta_list' %}"
-       class="{% if request.resolver_match.url_name == 'warta_list' or request.resolver_match.url_name == 'warta_detail' %}active{% endif %}">Warta</a></li>
+       class="{% if request.resolver_match.url_name == 'warta_list' or request.resolver_match.url_name == 'warta_detail' %}active{% endif %}">Publikasi</a></li>
     <li><a href="{% url 'website:event_list' %}"
        class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">Kegiatan</a></li>
     <li><a href="{% url 'website:gallery' %}"
@@ -64,15 +64,10 @@
           <a href="{% url 'website:event_list' %}">Kegiatan</a>
           <a href="{% url 'website:about' %}">Tentang</a>
           <a href="{% url 'website:visit' %}">Kunjungi</a>
-          <a href="{% url 'website:warta_list' %}">Warta</a>
+          <a href="{% url 'website:warta_list' %}">Publikasi</a>
           <a href="{% url 'website:gallery' %}">Galeri</a>
           <a href="{% url 'website:contact' %}">Kontak</a>
-    
-        {% if user.is_staff %}
-          <a href="{% url 'members:member_list' %}">Members</a>
-        {% else %}
-          <a href="/admin/login/?next=/members/">Staff Login</a>
-        {% endif %}
+          <a href="{% url 'website:giving' %}">Persembahan</a>
         </div>
       <div class="footer__contact">
         {% for st in footer_service_times %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('warta/<slug:slug>/', views.warta_detail, name='warta_detail'),
     path('gallery/', views.gallery, name='gallery'),
     path('gallery/<slug:slug>/', views.album_detail, name='album_detail'),
+    path('giving/', views.giving, name='giving'),
     path('contact/', views.contact, name='contact'),
 
 ]
