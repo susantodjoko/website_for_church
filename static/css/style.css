@@ -2,15 +2,16 @@
    DESIGN TOKENS
    =========================== */
 :root {
-  --color-primary:      #1B4F8A;
-  --color-primary-dark: #153D6B;
-  --color-dark:         #1A1A1A;
-  --color-dark-2:       #2C2C2C;
-  --color-light:        #F7F7F5;
-  --color-white:        #FFFFFF;
-  --color-text:         #1A1A1A;
-  --color-text-muted:   #6B6B6B;
-  --color-border:       #E5E5E3;
+  --color-primary:      #B8704A;
+  --color-primary-dark: #9A5A38;
+  --color-accent:       #7A8C6A;
+  --color-dark:         #2D2419;
+  --color-dark-2:       #3D3328;
+  --color-light:        #F0E8DC;
+  --color-white:        #FFFDF9;
+  --color-text:         #2D2419;
+  --color-text-muted:   #7D6B5A;
+  --color-border:       #DDD3C5;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Lora', Georgia, serif;
