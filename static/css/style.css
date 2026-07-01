@@ -13,6 +13,7 @@
   --color-border:       #E5E5E3;
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
 
   --space-xs:  0.5rem;
   --space-sm:  1rem;
@@ -66,6 +67,7 @@ ul { list-style: none; }
 .section--light { background: var(--color-light); }
 
 .section__title {
+  font-family: var(--font-serif);
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: var(--space-lg);
@@ -215,6 +217,7 @@ ul { list-style: none; }
 }
 
 .hero__headline {
+  font-family: var(--font-serif);
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
   line-height: 1.1;
@@ -288,7 +291,7 @@ ul { list-style: none; }
 }
 .card--ministry .card__tag { color: rgba(255,255,255,0.6); }
 
-.card__title { font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-xs); line-height: 1.3; }
+.card__title { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 700; margin-bottom: var(--space-xs); line-height: 1.3; }
 
 .card__meta { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: var(--space-xs); }
 .card--ministry .card__meta { color: rgba(255,255,255,0.6); }
@@ -318,7 +321,7 @@ ul { list-style: none; }
 
 .service-card--online { border-top-color: #27ae60; }
 
-.service-card__name { font-size: 1.3rem; font-weight: 700; margin-bottom: var(--space-xs); }
+.service-card__name { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 700; margin-bottom: var(--space-xs); }
 .service-card__times { font-size: 1rem; font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-xs); }
 .service-card__address { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-md); }
 
@@ -332,7 +335,7 @@ ul { list-style: none; }
   text-align: center;
 }
 
-.page-header__title { font-size: 2.5rem; font-weight: 800; }
+.page-header__title { font-family: var(--font-serif); font-size: 2.5rem; font-weight: 800; }
 .page-header__sub { font-size: 1.1rem; opacity: 0.75; margin-top: var(--space-xs); }
 
 /* ===========================
@@ -399,6 +402,7 @@ ul { list-style: none; }
 }
 
 .value-card__title {
+  font-family: var(--font-serif);
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: var(--space-xs);
@@ -450,7 +454,7 @@ ul { list-style: none; }
   margin-bottom: var(--space-lg);
 }
 
-.footer__name { font-size: 1.4rem; font-weight: 800; margin-bottom: var(--space-xs); }
+.footer__name { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 800; margin-bottom: var(--space-xs); }
 .footer__tagline { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
 
 .footer__links { display: flex; flex-direction: column; gap: var(--space-xs); }
