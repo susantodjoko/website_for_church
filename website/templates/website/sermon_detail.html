@@ -38,6 +38,8 @@
         };
       });
     </script>
+    {% elif sermon.thumbnail %}
+    <img src="{{ sermon.thumbnail.url }}" alt="{{ sermon.title }}" class="sermon-detail__img">
     {% endif %}
 
     {% if sermon.series %}

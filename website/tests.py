@@ -138,6 +138,42 @@ class SermonYoutubeOptionalTest(TestCase):
         sermon.full_clean()
 
 
+class SermonDetailImageFallbackTest(TestCase):
+    def test_shows_thumbnail_when_no_youtube_url(self):
+        sermon = Sermon.objects.create(
+            title='Photo Only Sermon', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='', thumbnail='sermons/test.jpg'
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': sermon.slug})
+        )
+        self.assertContains(response, 'sermon-detail__img')
+        self.assertNotContains(response, 'yt-iframe')
+
+    def test_shows_video_when_youtube_url_present(self):
+        sermon = Sermon.objects.create(
+            title='Video Sermon', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url='https://youtube.com/watch?v=abc',
+            thumbnail='sermons/test.jpg'
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': sermon.slug})
+        )
+        self.assertContains(response, 'yt-iframe')
+        self.assertNotContains(response, 'sermon-detail__img')
+
+    def test_shows_neither_when_no_video_and_no_thumbnail(self):
+        sermon = Sermon.objects.create(
+            title='Text Only Sermon', pastor='P', date=date(2025, 1, 1),
+            description='', youtube_url=''
+        )
+        response = self.client.get(
+            reverse('website:sermon_detail', kwargs={'slug': sermon.slug})
+        )
+        self.assertNotContains(response, 'yt-iframe')
+        self.assertNotContains(response, 'sermon-detail__img')
+
+
 class WartaSlugTest(TestCase):
     def test_slug_auto_generated_on_save(self):
         warta = WartaJemaat.objects.create(
