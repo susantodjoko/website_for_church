@@ -129,6 +129,15 @@ class SermonSlugTest(TestCase):
         self.assertEqual(s2.slug, 'same-title-2025-06-01-1')
 
 
+class SermonYoutubeOptionalTest(TestCase):
+    def test_youtube_url_can_be_blank(self):
+        sermon = Sermon(
+            title='No Video Sermon', pastor='P', date=date(2025, 1, 1),
+            description='A sermon without video', youtube_url='', thumbnail='sermons/test.jpg'
+        )
+        sermon.full_clean()
+
+
 class WartaSlugTest(TestCase):
     def test_slug_auto_generated_on_save(self):
         warta = WartaJemaat.objects.create(

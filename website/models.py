@@ -48,7 +48,7 @@ class Sermon(models.Model):
     pastor = models.CharField(max_length=100)
     date = models.DateField()
     description = models.TextField()
-    youtube_url = models.URLField()
+    youtube_url = models.URLField(blank=True)
     thumbnail = models.ImageField(upload_to='sermons/', blank=True)
     is_featured = models.BooleanField(default=False)
     topic = models.ForeignKey(
