@@ -111,7 +111,11 @@
         <h3 class="service-card__name">{{ service.campus_name }}</h3>
         <p class="service-card__times">{{ service.times }}</p>
         <p class="service-card__address">{{ service.address }}</p>
-        <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }}</a>
+        <!--- <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }} </a> --->
+       <a href="https://www.google.com/maps/search/?api=1&query={{ service.address|urlencode }}"
+           target="_blank" rel="noopener" class="btn btn--outline" style="margin-top: 0.5rem;">
+          Petunjuk Arah →
+        </a>
       </div>
       {% endfor %}
     </div>

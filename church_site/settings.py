@@ -136,6 +136,10 @@ SUMMERNOTE_CONFIG = {
     'iframe': False,
     'attachment_require_authentication': True,
     'attachment_filesize_limit': 5 * 1024 * 1024,  # 5 MB
+    # Django admin's jquery.init.js runs jQuery.noConflict(true), which wipes
+    # both window.$ and window.jQuery, leaving only window.django.jQuery.
+    # Summernote defaults to '$', which is never defined on admin pages.
+    'jquery': 'django.jQuery',
 }
 
 

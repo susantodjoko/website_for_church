@@ -1,0 +1,4 @@
+/* django-summernote 0.8.20.0's 'lite' theme references 'summernote-lite.css',
+   but the package only ships 'summernote-lite.min.css' — this file plugs
+   that gap so Django's staticfiles finder has something to serve. */
+@import url("summernote-lite.min.css");

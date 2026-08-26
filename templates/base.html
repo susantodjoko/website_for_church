@@ -21,7 +21,10 @@
 
   <nav class="navbar" id="navbar">
     <div class="container navbar__inner">
-      <a href="{% url 'website:home' %}" class="navbar__logo">GKJ Salatiga</a>
+      <a href="{% url 'website:home' %}" class="navbar__logo">
+        <img src="{% static 'images/logo.png' %}" alt="GKJ Salatiga" class="navbar__logo-img">
+        GKJ Salatiga
+      </a>
 
       <button class="navbar__toggle" id="navToggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>

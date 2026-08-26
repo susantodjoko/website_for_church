@@ -284,8 +284,6 @@ class AboutContactCTATest(TestCase):
     def test_about_page_has_contact_cta(self):
         AboutPage.objects.create(
             mission_statement='Komunitas iman.',
-            pastor_name='Pdt. Test',
-            pastor_bio='Bio pendeta.'
         )
         response = self.client.get(reverse('website:about'))
         self.assertContains(response, 'Jam &amp; Lokasi')

@@ -65,7 +65,7 @@ class PendetaInline(admin.StackedInline):
 
 
 class AboutPageAdmin(SummernoteModelAdmin):
-    summernote_fields = ['mission_statement', 'pastor_bio']
+    summernote_fields = ['mission_statement']
     inlines = [PendetaInline, AboutValueInline]
 
     def has_add_permission(self, request):

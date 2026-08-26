@@ -137,9 +137,19 @@ ul { list-style: none; }
 
 .navbar__logo {
   font-size: 1.25rem;
-  font-weight: 800;
+  font-weight: 500;
   color: var(--color-white);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  gap: 0.4rem;
+}
+
+.navbar__logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
 }
 
 .navbar__links {

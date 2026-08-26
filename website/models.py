@@ -135,9 +135,6 @@ class Event(models.Model):
 
 class AboutPage(models.Model):
     mission_statement = models.TextField()
-    pastor_name = models.CharField(max_length=100)
-    pastor_bio = models.TextField()
-    pastor_photo = models.ImageField(upload_to='about/', blank=True)
 
     def __str__(self):
         return 'About Page'

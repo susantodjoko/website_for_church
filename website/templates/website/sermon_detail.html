@@ -62,11 +62,12 @@
 
     <div class="rich-content" style="line-height: 1.8; color: var(--color-text-muted);">{{ sermon.description|clean_html }}</div>
 
-    <div class="share-row" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem;">
-      <a href="https://wa.me/?text={{ sermon.title|urlencode }}%20{{ request.build_absolute_uri }}"
+   <div class="share-row" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 2rem;">
+    <!---  <a href="https://wa.me/?text={{ sermon.title|urlencode }}%20{{ request.build_absolute_uri }}"
          target="_blank" rel="noopener" class="btn btn--outline">Bagikan via WhatsApp</a>
       <button onclick="navigator.clipboard.writeText(window.location.href)"
               class="btn btn--outline">Salin Tautan</button>
+    --->
     </div>
 
     {% if related %}
