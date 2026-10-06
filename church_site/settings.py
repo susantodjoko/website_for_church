@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import importlib.util
 import os
+import sys
 from pathlib import Path
 
 
@@ -142,6 +144,8 @@ SUMMERNOTE_CONFIG = {
     # both window.$ and window.jQuery, leaving only window.django.jQuery.
     # Summernote defaults to '$', which is never defined on admin pages.
     'jquery': 'django.jQuery',
+    # Make editor text follow the admin's light/dark theme (readable on dark).
+    'css_for_inplace': ('summernote/admin-editor.css',),
 }
 
 
@@ -161,3 +165,33 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
 
 LOGIN_URL = "/admin/login/"
 LOGIN_REDIRECT_URL = "/members/"
+
+
+# Logging: show SQL queries in the console with DJANGO_LOG_SQL=True
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "DEBUG" if os.environ.get("DJANGO_LOG_SQL") == "True" else "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+
+# Django Debug Toolbar: local dev only (needs requirements-dev.txt).
+# Skipped when DEBUG is off, when running tests, or when not installed.
+TESTING = "test" in sys.argv
+DEBUG_TOOLBAR_ENABLED = (
+    DEBUG and not TESTING and importlib.util.find_spec("debug_toolbar") is not None
+)
+if DEBUG_TOOLBAR_ENABLED:
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INTERNAL_IPS = ["127.0.0.1"]

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from datetime import date
-from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage, WartaJemaat, Album
+from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage, WartaJemaat, Album, Topic
 
 
 class HeroSlideModelTest(TestCase):
@@ -61,16 +61,17 @@ class SermonListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_filter_by_topic(self):
-        from datetime import date
+        faith = Topic.objects.create(name='Faith')
+        family = Topic.objects.create(name='Family')
         Sermon.objects.create(
             title='Faith Talk', pastor='P', date=date(2025, 1, 1),
-            description='', youtube_url='https://youtube.com/watch?v=abc', topic='faith'
+            description='', youtube_url='https://youtube.com/watch?v=abc', topic=faith
         )
         Sermon.objects.create(
             title='Family Life', pastor='P', date=date(2025, 2, 1),
-            description='', youtube_url='https://youtube.com/watch?v=xyz', topic='family'
+            description='', youtube_url='https://youtube.com/watch?v=xyz', topic=family
         )
-        response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
+        response = self.client.get(reverse('website:sermon_list') + f'?topic={faith.pk}')
         self.assertEqual(len(response.context['page'].object_list), 1)
         self.assertEqual(response.context['page'].object_list[0].title, 'Faith Talk')
 
@@ -279,6 +280,16 @@ class FooterContextProcessorTest(TestCase):
         self.assertIn('footer_service_times', response.context)
         self.assertEqual(len(list(response.context['footer_service_times'])), 1)
 
+    def test_footer_shows_all_campuses(self):
+        for name in ['GKJ Salatiga', 'Pepanthan Gedong', 'Pepanthan Kayu Wangi']:
+            ServiceTime.objects.create(
+                campus_name=name, address=f'Alamat {name}', times='Minggu 07:00',
+                link_label='Info', link_url='/'
+            )
+        response = self.client.get(reverse('website:home'))
+        for name in ['GKJ Salatiga', 'Pepanthan Gedong', 'Pepanthan Kayu Wangi']:
+            self.assertContains(response, f'Alamat {name}')
+
 
 class AboutContactCTATest(TestCase):
     def test_about_page_has_contact_cta(self):
@@ -308,14 +319,43 @@ class EmptyStateTest(TestCase):
         self.assertContains(response, 'Hubungi Kami')
 
     def test_sermons_empty_state_has_back_link(self):
+        faith = Topic.objects.create(name='Faith')
+        family = Topic.objects.create(name='Family')
         Sermon.objects.create(
             title='Family Talk', pastor='P', date=date(2025, 1, 1),
             description='', youtube_url='https://youtube.com/watch?v=abc',
-            topic='family'
+            topic=family
         )
-        response = self.client.get(reverse('website:sermon_list') + '?topic=faith')
+        response = self.client.get(reverse('website:sermon_list') + f'?topic={faith.pk}')
         self.assertContains(response, 'Lihat Semua Khotbah')
 
     def test_gallery_empty_state_shown(self):
         response = self.client.get(reverse('website:gallery'))
         self.assertContains(response, 'Belum ada foto yang tersedia')
+
+
+class ParagraphsFilterTest(TestCase):
+    def test_plain_text_lines_become_paragraphs(self):
+        from website.templatetags.safe_html import paragraphs
+        self.assertEqual(
+            paragraphs('First line.\r\nSecond line.\r\n\r\nThird.'),
+            '<p>First line.</p><p>Second line.</p><p>Third.</p>',
+        )
+
+    def test_plain_text_is_escaped(self):
+        from website.templatetags.safe_html import paragraphs
+        self.assertEqual(paragraphs('a < b & c'), '<p>a &lt; b &amp; c</p>')
+
+    def test_html_is_sanitised_not_rewrapped(self):
+        from website.templatetags.safe_html import paragraphs
+        self.assertEqual(
+            paragraphs('<p>Hi</p><script>x</script>'),
+            '<p>Hi</p>x',
+        )
+
+    def test_about_page_renders_bio_paragraphs(self):
+        from website.models import Pendeta
+        page = AboutPage.objects.create(mission_statement='<p>Visi</p>')
+        Pendeta.objects.create(page=page, nama='Pdt. A', bio='Para one.\nPara two.')
+        response = self.client.get(reverse('website:about'))
+        self.assertContains(response, '<p>Para one.</p><p>Para two.</p>', html=False)

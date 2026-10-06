@@ -6,3 +6,7 @@ __pycache__/
 .superpowers/
 articles/
 .env
+.venv/
+.coverage
+htmlcov/
+staticfiles/

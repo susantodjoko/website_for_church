@@ -866,3 +866,6 @@ ul { list-style: none; }
 }
 
 .tab-panel--hidden { display: none; }
+
+/* Paragraph spacing for long-form text (pastor bios, history) */
+.prose-text p + p { margin-top: 1em; }

@@ -1,0 +1,8 @@
+/* summernote-lite hard-codes the editor text to black (.note-frame{color:#000})
+   but leaves the editing area transparent, so in the admin's dark theme typed
+   or pasted text is black on a dark background. Use the admin's own theme
+   colours instead, so the editor follows light/dark mode. */
+.note-editor.note-frame .note-editing-area .note-editable {
+    color: var(--body-fg, #fff);
+    background-color: var(--body-bg, #121212);
+}
