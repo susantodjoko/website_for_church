@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2026-10-26">
   {% block extra_css %}{% endblock %}
 </head>
 
@@ -60,6 +60,33 @@
         <div class="footer__brand">
           <p class="footer__name">GKJ Salatiga</p>
           <p class="footer__tagline">Gereja Kristen Jawa Salatiga</p>
+          <div class="footer__socials">
+            <a href="https://www.instagram.com/gkjsalatiga/" target="_blank" rel="noopener" class="footer__social" aria-label="Instagram GKJ Salatiga">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                <defs>
+                  <radialGradient id="ig-gradient" cx="0.3" cy="1.07" r="1.3">
+                    <stop offset="0" stop-color="#fdf497"/>
+                    <stop offset="0.05" stop-color="#fdf497"/>
+                    <stop offset="0.45" stop-color="#fd5949"/>
+                    <stop offset="0.6" stop-color="#d6249f"/>
+                    <stop offset="0.9" stop-color="#285aeb"/>
+                  </radialGradient>
+                </defs>
+                <rect width="24" height="24" rx="6" fill="url(#ig-gradient)"/>
+                <rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.8"/>
+                <circle cx="12" cy="12" r="3.3" fill="none" stroke="#fff" stroke-width="1.8"/>
+                <circle cx="16.3" cy="7.7" r="1.1" fill="#fff"/>
+              </svg>
+              @gkjsalatiga
+            </a>
+            <a href="https://www.youtube.com/@MultimediaGKJSalatiga" target="_blank" rel="noopener" class="footer__social" aria-label="YouTube GKJ Salatiga">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                <rect y="4" width="24" height="16" rx="4.5" fill="#ff0000"/>
+                <path d="M9.75 8.5v7l6-3.5z" fill="#fff"/>
+              </svg>
+              @MultimediaGKJSalatiga
+            </a>
+          </div>
         </div>
         <div class="footer__links">
           <a href="{% url 'website:home' %}">Beranda</a>
