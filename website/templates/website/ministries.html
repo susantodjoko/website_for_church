@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Komisi — GKJ Salatiga{% endblock %}
+{% block meta_description %}Komisi-komisi di GKJ Salatiga.{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Komisi</h1>
+    <p class="page-header__sub">Komisi-komisi di GKJ Salatiga</p>
+  </div>
+</header>
+
+<section class="section section--dark">
+  <div class="container">
+    <div class="card-grid">
+      {% for ministry in ministries %}
+      {% include 'website/_ministry_card.html' %}
+      {% empty %}
+      <p style="text-align: center;">Informasi komisi akan segera tersedia.</p>
+      {% endfor %}
+    </div>
+    <div class="section__cta">
+      <a href="{% url 'website:contact' %}" class="btn btn--outline-light">Ingin Terlibat? Hubungi Kami</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

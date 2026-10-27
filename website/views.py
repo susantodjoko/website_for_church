@@ -10,7 +10,9 @@ from members.models import Member
 def home(request):
     hero = HeroSlide.objects.filter(is_active=True).first()
     featured_sermons = Sermon.objects.filter(is_featured=True)[:3]
-    ministries = Ministry.objects.all()[:6]
+    all_ministries = Ministry.objects.all()
+    # Staff pick up to 6 for the home page; fall back to the first 6 by order
+    ministries = all_ministries.filter(show_on_home=True)[:6] or all_ministries[:6]
     service_times = ServiceTime.objects.all()
     today = date.today()
     upcoming_events = Event.objects.filter(is_published=True, date__gte=today)[:3]
@@ -36,6 +38,7 @@ def home(request):
         'hero': hero,
         'featured_sermons': featured_sermons,
         'ministries': ministries,
+        'ministry_total': all_ministries.count(),
         'service_times': service_times,
         'upcoming_events': upcoming_events,
         'latest_news': latest_news,
@@ -95,6 +98,15 @@ def event_list(request):
         'events': events.filter(date__gte=today),
         'past_events': events.filter(date__lt=today).order_by('-date').prefetch_related(reports)[:12],
     })
+
+
+def ministry_list(request):
+    return render(request, 'website/ministries.html', {'ministries': Ministry.objects.all()})
+
+
+def ministry_detail(request, pk):
+    ministry = get_object_or_404(Ministry, pk=pk)
+    return render(request, 'website/ministry_detail.html', {'ministry': ministry})
 
 
 def about(request):

@@ -80,22 +80,19 @@
 
 <!-- MINISTRIES -->
 {% if ministries %}
-<section class="section section--dark">
+<section id="komisi" class="section section--dark">
   <div class="container">
-    <h2 class="section__title">Pelayanan Kami</h2>
+    <h2 class="section__title">Komisi</h2>
     <div class="card-grid">
       {% for ministry in ministries %}
-      <div class="card card--ministry">
-        {% if ministry.image %}
-          <img src="{{ ministry.image.url }}" alt="{{ ministry.name }}" class="card__img">
-        {% endif %}
-        <div class="card__body">
-          <h3 class="card__title">{{ ministry.name }}</h3>
-          <p class="card__text">{{ ministry.description }}</p>
-        </div>
-      </div>
+      {% include 'website/_ministry_card.html' %}
       {% endfor %}
     </div>
+    {% if ministry_total > ministries|length %}
+    <div class="section__cta">
+      <a href="{% url 'website:ministry_list' %}" class="btn btn--outline-light">Lihat Semua Komisi ({{ ministry_total }})</a>
+    </div>
+    {% endif %}
   </div>
 </section>
 {% endif %}

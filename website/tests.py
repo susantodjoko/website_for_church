@@ -405,3 +405,54 @@ class BeritaAndPastEventsTest(TestCase):
         response = self.client.get(reverse('website:warta_detail', args=[report.slug]))
         self.assertContains(response, 'Lihat Galeri Foto')
         self.assertContains(response, reverse('website:album_detail', args=[album.slug]))
+
+
+class HomeMinistriesTest(TestCase):
+    def make(self, n, **kwargs):
+        return [Ministry.objects.create(name=f'Pelayanan {i}', description='x', order=i, **kwargs)
+                for i in range(n)]
+
+    def test_home_falls_back_to_first_six_by_order(self):
+        self.make(8)
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual([m.name for m in response.context['ministries']],
+                         [f'Pelayanan {i}' for i in range(6)])
+        self.assertContains(response, 'Lihat Semua Komisi (8)')
+
+    def test_home_shows_only_ticked_ministries(self):
+        ms = self.make(8)
+        for m in (ms[7], ms[3]):
+            m.show_on_home = True
+            m.save()
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual([m.name for m in response.context['ministries']], ['Pelayanan 3', 'Pelayanan 7'])
+
+    def test_home_caps_ticked_at_six(self):
+        self.make(9, show_on_home=True)
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual(len(response.context['ministries']), 6)
+
+    def test_no_see_all_button_when_everything_fits(self):
+        self.make(4)
+        response = self.client.get(reverse('website:home'))
+        self.assertNotContains(response, 'Lihat Semua Komisi')
+
+    def test_ministry_page_lists_all(self):
+        self.make(9)
+        response = self.client.get(reverse('website:ministry_list'))
+        self.assertEqual(len(response.context['ministries']), 9)
+        self.assertContains(response, 'Pelayanan 8')
+
+    def test_cards_link_to_ministry_page(self):
+        m = Ministry.objects.create(name='Diakonia', description='Singkat.')
+        response = self.client.get(reverse('website:home'))
+        self.assertContains(response, reverse('website:ministry_detail', args=[m.pk]))
+
+    def test_ministry_page_shows_full_description_as_paragraphs(self):
+        m = Ministry.objects.create(name='Diakonia', description='Paragraf satu.\nParagraf dua.')
+        response = self.client.get(reverse('website:ministry_detail', args=[m.pk]))
+        self.assertContains(response, '<p>Paragraf satu.</p><p>Paragraf dua.</p>', html=False)
+
+    def test_unknown_ministry_is_404(self):
+        response = self.client.get(reverse('website:ministry_detail', args=[999]))
+        self.assertEqual(response.status_code, 404)

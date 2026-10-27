@@ -1,0 +1,10 @@
+<a href="{% url 'website:ministry_detail' ministry.pk %}" class="card card--ministry ministry-card">
+  {% if ministry.image %}
+    <img src="{{ ministry.image.url }}" alt="{{ ministry.name }}" class="card__img">
+  {% endif %}
+  <div class="card__body">
+    <h3 class="card__title">{{ ministry.name }}</h3>
+    <p class="card__text ministry-card__text">{{ ministry.description }}</p>
+    <span class="ministry-card__more">Selengkapnya &rarr;</span>
+  </div>
+</a>

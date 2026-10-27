@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load safe_html %}
+{% block title %}{{ ministry.name }} — GKJ Salatiga{% endblock %}
+{% block meta_description %}{{ ministry.description|truncatechars:160 }}{% endblock %}
+{% block og_title %}{{ ministry.name }} — GKJ Salatiga{% endblock %}
+{% block og_description %}{{ ministry.description|truncatechars:160 }}{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <p class="page-header__sub">Komisi</p>
+    <h1 class="page-header__title">{{ ministry.name }}</h1>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container" style="max-width: 820px;">
+    {% if ministry.image %}
+      <img src="{{ ministry.image.url }}" alt="{{ ministry.name }}" class="ministry-detail__img">
+    {% endif %}
+    <div class="prose-text ministry-detail__text">
+      {{ ministry.description|paragraphs }}
+    </div>
+    <div class="ministry-detail__actions">
+      <a href="{% url 'website:contact' %}" class="btn btn--primary">Ingin Terlibat? Hubungi Kami</a>
+      <a href="{% url 'website:ministry_list' %}" class="btn btn--outline">&larr; Semua Komisi</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

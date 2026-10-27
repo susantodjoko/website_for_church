@@ -39,8 +39,9 @@ class SermonAdmin(SummernoteModelAdmin):
 
 
 class MinistryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'order']
-    ordering = ['order']
+    list_display = ['name', 'order', 'show_on_home']
+    list_editable = ['order', 'show_on_home']
+    ordering = ['order', 'id']
 
 
 class ServiceTimeAdmin(admin.ModelAdmin):

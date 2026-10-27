@@ -80,9 +80,13 @@ class Ministry(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='ministry/', blank=True)
     order = models.PositiveIntegerField(default=0)
+    show_on_home = models.BooleanField(
+        'Tampilkan di Beranda', default=False,
+        help_text='Beranda menampilkan maksimal 6 komisi yang dicentang.',
+    )
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', 'id']
         verbose_name_plural = 'Ministries'
 
     def __str__(self):
