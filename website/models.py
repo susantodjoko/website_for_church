@@ -171,7 +171,7 @@ class Pendeta(models.Model):
 class WartaJemaat(models.Model):
     CATEGORY_CHOICES = [
         ('warta', 'Warta Mingguan'),
-        ('pengumuman', 'Pengumuman'),
+        ('berita', 'Berita'),
         ('liturgi', 'Liturgi'),
         ('bahan', 'Bahan'),
     ]
@@ -182,6 +182,16 @@ class WartaJemaat(models.Model):
     image = models.ImageField(upload_to='warta/', blank=True)
     pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
+    event = models.ForeignKey(
+        Event, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='reports', verbose_name='Kegiatan terkait',
+        help_text='Untuk Berita: kegiatan yang diliput. Muncul sebagai "Baca Laporan" di halaman Kegiatan.',
+    )
+    album = models.ForeignKey(
+        'Album', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='news_posts', verbose_name='Album foto',
+        help_text='Untuk Berita: album Galeri berisi foto kegiatan.',
+    )
     is_published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     slug = models.SlugField(max_length=220, unique=True, blank=True)

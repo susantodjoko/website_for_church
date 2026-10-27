@@ -39,4 +39,27 @@
     </div>
   </div>
 </section>
+
+{% if past_events %}
+<section class="section section--light">
+  <div class="container">
+    <h2 class="section__title">Kegiatan Sebelumnya</h2>
+    <ul class="past-events">
+      {% for event in past_events %}
+      <li class="past-events__item">
+        <div>
+          <p class="past-events__date">{{ event.date|date:"j F Y" }}</p>
+          <p class="past-events__title">{{ event.title }}</p>
+        </div>
+        {% with report=event.published_reports.0 %}
+        {% if report %}
+          <a href="{% url 'website:warta_detail' report.slug %}" class="btn btn--outline">Baca Laporan &rarr;</a>
+        {% endif %}
+        {% endwith %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
 {% endblock %}

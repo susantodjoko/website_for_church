@@ -1,5 +1,5 @@
 from django.test import TestCase
-from datetime import date
+from datetime import date, timedelta
 from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage, WartaJemaat, Album, Topic
 
 
@@ -304,7 +304,7 @@ class AboutContactCTATest(TestCase):
 class EventsMapsLinkTest(TestCase):
     def test_event_location_is_maps_link(self):
         Event.objects.create(
-            title='Kebaktian Natal', date=date(2025, 12, 25),
+            title='Kebaktian Natal', date=date.today() + timedelta(days=30),
             time='09:00', location='Gedung GKJ Salatiga',
             description='Ibadah natal bersama.'
         )
@@ -359,3 +359,49 @@ class ParagraphsFilterTest(TestCase):
         Pendeta.objects.create(page=page, nama='Pdt. A', bio='Para one.\nPara two.')
         response = self.client.get(reverse('website:about'))
         self.assertContains(response, '<p>Para one.</p><p>Para two.</p>', html=False)
+
+
+class BeritaAndPastEventsTest(TestCase):
+    def setUp(self):
+        today = date.today()
+        self.past = Event.objects.create(
+            title='Bazar Lalu', date=today - timedelta(days=10), time='09:00',
+            location='Gedung', description='x'
+        )
+        self.future = Event.objects.create(
+            title='Retret Nanti', date=today + timedelta(days=10), time='09:00',
+            location='Gedung', description='x'
+        )
+
+    def test_home_shows_only_upcoming_events(self):
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual(list(response.context['upcoming_events']), [self.future])
+
+    def test_events_page_splits_upcoming_and_past(self):
+        response = self.client.get(reverse('website:event_list'))
+        self.assertEqual(list(response.context['events']), [self.future])
+        self.assertEqual(list(response.context['past_events']), [self.past])
+
+    def test_past_event_links_to_its_report(self):
+        report = WartaJemaat.objects.create(
+            title='Laporan Bazar', date=date.today(), category='berita', event=self.past
+        )
+        response = self.client.get(reverse('website:event_list'))
+        self.assertContains(response, reverse('website:warta_detail', args=[report.slug]))
+        self.assertContains(response, 'Baca Laporan')
+
+    def test_home_feed_shows_only_berita(self):
+        WartaJemaat.objects.create(title='Cerita Bazar', date=date.today(), category='berita')
+        WartaJemaat.objects.create(title='Tata Ibadah', date=date.today(), category='liturgi')
+        response = self.client.get(reverse('website:home'))
+        self.assertEqual([w.title for w in response.context['latest_news']], ['Cerita Bazar'])
+        self.assertEqual([w.title for w in response.context['weekly_docs']], ['Tata Ibadah'])
+
+    def test_report_page_links_to_album(self):
+        album = Album.objects.create(title='Foto Bazar', date=date.today(), cover_image='')
+        report = WartaJemaat.objects.create(
+            title='Laporan', date=date.today(), category='berita', event=self.past, album=album
+        )
+        response = self.client.get(reverse('website:warta_detail', args=[report.slug]))
+        self.assertContains(response, 'Lihat Galeri Foto')
+        self.assertContains(response, reverse('website:album_detail', args=[album.slug]))

@@ -29,6 +29,22 @@
       </div>
     {% endif %}
 
+    {% if warta.event or warta.album %}
+      <div class="report-links">
+        {% if warta.event %}
+          <p class="report-links__event">
+            Laporan kegiatan: <strong>{{ warta.event.title }}</strong>
+            &middot; {{ warta.event.date|date:"j F Y" }} &middot; {{ warta.event.location }}
+          </p>
+        {% endif %}
+        {% if warta.album %}
+          <a href="{% url 'website:album_detail' warta.album.slug %}" class="btn btn--primary">
+            Lihat Galeri Foto ({{ warta.album.photos.count }} foto) &rarr;
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+
     {% if warta.pdf_file %}
       <div style="margin-top: 2rem;">
         <iframe src="{{ warta.pdf_file.url }}"
@@ -43,7 +59,7 @@
     {% endif %}
 
     <div style="margin-top: 2rem;">
-      <a href="{% url 'website:warta_list' %}" class="btn btn--outline">&larr; Kembali ke Warta</a>
+      <a href="{% url 'website:warta_list' %}" class="btn btn--outline">&larr; Kembali ke Publikasi</a>
     </div>
 
   </div>

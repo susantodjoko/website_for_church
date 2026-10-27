@@ -151,31 +151,41 @@
   </div>
 </section>
 {% endif %}
-{% if latest_news %}
-<section class="section section--light">
+{% if latest_news or weekly_docs %}
+<section id="berita" class="section section--light" style="scroll-margin-top: 80px;">
   <div class="container">
-    <h2 class="section__title">Warta Jemaat</h2>
+    <h2 class="section__title">Berita Terbaru</h2>
+    {% if latest_news %}
     <div class="card-grid">
       {% for item in latest_news %}
-      <div class="card">
+      <a href="{% url 'website:warta_detail' item.slug %}" class="card news-card">
         {% if item.image %}
           <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card__img">
         {% endif %}
         <div class="card__body">
-          <span class="tag">{{ item.get_category_display }}</span>
+          <p class="card__meta">{{ item.date|date:"j F Y" }}{% if item.event %} &middot; {{ item.event.title }}{% endif %}</p>
           <h3 class="card__title">{{ item.title }}</h3>
-          <p class="card__meta">{{ item.date }}</p>
           {% if item.content %}
             <p class="card__text">{{ item.content|striptags|truncatewords:20 }}</p>
           {% endif %}
-          <a href="{% url 'website:warta_detail' item.slug %}" class="btn btn--secondary">Baca Selengkapnya</a>
+          <span class="news-card__more">Baca selengkapnya &rarr;</span>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
     <div class="section__cta">
-      <a href="{% url 'website:warta_list' %}" class="btn btn--secondary">Lihat Semua Warta</a>
+      <a href="{% url 'website:warta_list' %}?category=berita" class="btn btn--secondary">Lihat Semua Berita</a>
     </div>
+    {% endif %}
+    {% if weekly_docs %}
+    <div class="weekly-docs">
+      <span class="weekly-docs__label">Warta &amp; Liturgi Minggu Ini:</span>
+      {% for doc in weekly_docs %}
+        <a href="{% url 'website:warta_detail' doc.slug %}">{{ doc.title }}</a>
+      {% endfor %}
+      <a href="{% url 'website:warta_list' %}" class="weekly-docs__all">Semua Publikasi &rarr;</a>
+    </div>
+    {% endif %}
   </div>
 </section>
 {% endif %}

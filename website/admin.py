@@ -73,7 +73,7 @@ class AboutPageAdmin(SummernoteModelAdmin):
 
 
 class WartaJemaatAdmin(SummernoteModelAdmin):
-    list_display = ['title', 'category', 'date', 'is_published']
+    list_display = ['title', 'category', 'date', 'event', 'is_published']
     list_filter = ['category', 'is_published']
     search_fields = ['title']
     summernote_fields = ['content']

@@ -872,3 +872,21 @@ ul { list-style: none; }
 
 /* Paragraph spacing for long-form text (pastor bios, history) */
 .prose-text p + p { margin-top: 1em; }
+
+/* Berita feed on the home page */
+.news-card { color: inherit; text-decoration: none; display: flex; flex-direction: column; }
+.news-card__more { margin-top: auto; padding-top: var(--space-xs); color: var(--color-primary); font-weight: 600; font-size: 0.9rem; }
+.weekly-docs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem 1.25rem; margin-top: var(--space-lg); padding-top: var(--space-md); border-top: 1px solid var(--color-border); font-size: 0.95rem; }
+.weekly-docs__label { color: var(--color-text-muted); font-weight: 600; }
+.weekly-docs a { color: var(--color-primary); }
+.weekly-docs__all { font-weight: 600; }
+
+/* Past events list with report links */
+.past-events { list-style: none; max-width: 760px; margin: 0 auto; }
+.past-events__item { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); flex-wrap: wrap; padding: var(--space-sm) 0; border-bottom: 1px solid var(--color-border); }
+.past-events__date { color: var(--color-text-muted); font-size: 0.85rem; }
+.past-events__title { font-weight: 700; }
+
+/* Event + album links on a news post */
+.report-links { margin-top: 2rem; padding: 1.25rem 1.5rem; background: var(--color-light); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+.report-links__event { color: var(--color-text-muted); }

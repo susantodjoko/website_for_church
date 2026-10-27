@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
 from django.core.paginator import Paginator
 from .forms import ContactForm
@@ -12,10 +12,18 @@ def home(request):
     featured_sermons = Sermon.objects.filter(is_featured=True)[:3]
     ministries = Ministry.objects.all()[:6]
     service_times = ServiceTime.objects.all()
-    upcoming_events = Event.objects.filter(is_published=True)[:3]
-    latest_news = WartaJemaat.objects.filter(is_published=True)[:3]
-    
     today = date.today()
+    upcoming_events = Event.objects.filter(is_published=True, date__gte=today)[:3]
+    published = WartaJemaat.objects.filter(is_published=True)
+    latest_news = published.filter(category='berita')[:3]
+    # Newest weekly warta and liturgy, shown as a compact link row
+    weekly_docs = [
+        doc for doc in (
+            published.filter(category='warta').first(),
+            published.filter(category='liturgi').first(),
+        ) if doc
+    ]
+
     week_dates = [today + timedelta(days=i) for i in range(7)]
     birthdays = []
     for d in week_dates:
@@ -31,6 +39,7 @@ def home(request):
         'service_times': service_times,
         'upcoming_events': upcoming_events,
         'latest_news': latest_news,
+        'weekly_docs': weekly_docs,
         'birthdays': birthdays,
     })
 
@@ -75,8 +84,17 @@ def sermon_detail(request, slug):
 
 
 def event_list(request):
+    today = date.today()
     events = Event.objects.filter(is_published=True)
-    return render(request, 'website/events.html', {'events': events})
+    reports = Prefetch(
+        'reports',
+        queryset=WartaJemaat.objects.filter(is_published=True, category='berita'),
+        to_attr='published_reports',
+    )
+    return render(request, 'website/events.html', {
+        'events': events.filter(date__gte=today),
+        'past_events': events.filter(date__lt=today).order_by('-date').prefetch_related(reports)[:12],
+    })
 
 
 def about(request):
