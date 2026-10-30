@@ -5,7 +5,7 @@
 <header class="page-header">
   <div class="container">
     <h1 class="page-header__title">Hubungi Kami</h1>
-    <p class="page-header__sub">Kirim pesan atau permintaan doa kepada kami</p>
+    <p class="page-header__sub">Kirim pesan atau permintaan doa melalui WhatsApp</p>
   </div>
 </header>
 
@@ -35,44 +35,6 @@
       </div>
       <a href="{% url 'website:giving' %}" class="btn btn--outline" style="white-space: nowrap;">Lihat Info →</a>
     </div>
-
-    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; color: var(--color-text-muted); font-size: 0.85rem;">
-      <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
-      <span>atau kirim pesan di bawah ini</span>
-      <div style="flex: 1; height: 1px; background: var(--color-border);"></div>
-    </div>
-
-    {% if sent %}
-      <div style="text-align: center; padding: 3rem 0;">
-        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem;">
-          Pesan Terkirim!
-        </h2>
-        <p style="color: var(--color-text-muted); margin-bottom: 2rem;">
-          Terima kasih. Kami akan menghubungi Anda segera.
-        </p>
-        <a href="{% url 'website:contact' %}" class="btn btn--primary">Kirim Pesan Lagi</a>
-        <a href="{% url 'website:home' %}" class="btn btn--outline">Kembali ke Beranda</a>
-      </div>
-
-    {% else %}
-      <form method="post" class="edit-form">
-        {% csrf_token %}
-        <div class="form-grid">
-          {% for field in form %}
-          <div class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-group--checkbox{% endif %} {% if field.name == 'message' %}form-group--full{% endif %}">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-              <p class="form-error">{{ field.errors|join:", " }}</p>
-            {% endif %}
-          </div>
-          {% endfor %}
-        </div>
-        <div style="margin-top: 1.5rem;">
-          <button type="submit" class="btn btn--primary">Kirim Pesan</button>
-        </div>
-      </form>
-    {% endif %}
 
   </div>
 </section>

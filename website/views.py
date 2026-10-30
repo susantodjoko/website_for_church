@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch, Q
 from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
 from django.core.paginator import Paginator
-from .forms import ContactForm
 from datetime import date, timedelta
 from members.models import Member
 
@@ -183,11 +182,5 @@ def giving(request):
 
 
 def contact(request):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return render(request, 'website/contact.html', {'form': form, 'sent': True})
-    else:
-        form = ContactForm()
-    return render(request, 'website/contact.html', {'form': form, 'sent': False})
+    # The message form is switched off; visitors reach the office via WhatsApp.
+    return render(request, 'website/contact.html')

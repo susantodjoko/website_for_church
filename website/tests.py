@@ -298,7 +298,7 @@ class AboutContactCTATest(TestCase):
         )
         response = self.client.get(reverse('website:about'))
         self.assertContains(response, 'Jam &amp; Lokasi')
-        self.assertContains(response, 'Kirim Pesan')
+        self.assertContains(response, 'Hubungi Kami')
 
 
 class EventsMapsLinkTest(TestCase):
@@ -456,3 +456,18 @@ class HomeMinistriesTest(TestCase):
     def test_unknown_ministry_is_404(self):
         response = self.client.get(reverse('website:ministry_detail', args=[999]))
         self.assertEqual(response.status_code, 404)
+
+
+class ContactPageTest(TestCase):
+    def test_contact_page_has_no_message_form(self):
+        response = self.client.get(reverse('website:contact'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, '<form')
+        self.assertContains(response, 'wa.me/')
+
+    def test_posting_does_not_save_a_message(self):
+        from website.models import ContactMessage
+        self.client.post(reverse('website:contact'), {
+            'name': 'A', 'email': 'a@example.com', 'message_type': 'general', 'message': 'Halo',
+        })
+        self.assertEqual(ContactMessage.objects.count(), 0)
