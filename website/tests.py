@@ -471,3 +471,64 @@ class ContactPageTest(TestCase):
             'name': 'A', 'email': 'a@example.com', 'message_type': 'general', 'message': 'Halo',
         })
         self.assertEqual(ContactMessage.objects.count(), 0)
+
+
+class BacaanHarianTest(TestCase):
+    def test_sabda_url_normalises_reference(self):
+        from .models import sabda_url
+        base = 'https://alkitab.sabda.org/passage.php?passage='
+        self.assertEqual(sabda_url('Yohanes 1: (1-9), 10-18'), base + 'Yohanes%201:1-9,10-18')
+        self.assertEqual(sabda_url('Kisah Pr. Rasul 2:14a, 22-32'), base + 'Kisah%20Para%20Rasul%202:14,22-32')
+        self.assertEqual(sabda_url('Keluaran 3:16-22, 4:18-20'), base + 'Keluaran%203:16-22;4:18-20')
+        self.assertEqual(sabda_url('3 Yohanes 9-12'), base + '3%20Yohanes%201:9-12')
+
+    def test_readings_split_alternatives_and_skip_empty(self):
+        from .models import BacaanHarian
+        b = BacaanHarian(
+            tanggal=date(2026, 4, 3), tanggapan='Mazmur 22',
+            bacaan_2='Ibrani 10:16-25 atau Ibrani 4:14-16; 5:7-9', injil='Yohanes 18:1-19:42',
+        )
+        readings = b.readings()
+        # Tanggapan is not shown; empty Bacaan I is skipped
+        self.assertEqual([label for label, _ in readings], ['Bacaan II', 'Injil'])
+        self.assertEqual([ref for ref, _ in readings[0][1]], ['Ibrani 10:16-25', 'Ibrani 4:14-16; 5:7-9'])
+
+    def test_week_page_shows_monday_to_sunday(self):
+        from .models import BacaanHarian, TemaBulan
+        BacaanHarian.objects.create(tanggal=date(2026, 11, 2), bacaan_1='Yeremia 5:18-31')
+        BacaanHarian.objects.create(tanggal=date(2026, 11, 8), keterangan='Minggu Biasa', injil='Matius 25:1-13')
+        TemaBulan.objects.create(tahun=2026, bulan=11, tema='Tuhan Tidak Akan Terlambat')
+        response = self.client.get('/bacaan/?minggu=2026-11-04')
+        self.assertEqual(response.status_code, 200)
+        days = response.context['days']
+        self.assertEqual([d['hari'] for d in days][0::6], ['Senin', 'Minggu'])
+        self.assertEqual(days[0]['date'], date(2026, 11, 2))
+        self.assertContains(response, 'Yeremia 5:18-31')
+        self.assertContains(response, 'Matius 25:1-13')
+        self.assertContains(response, 'Tuhan Tidak Akan Terlambat')
+
+    def test_week_page_without_data_and_bad_param(self):
+        response = self.client.get('/bacaan/?minggu=not-a-date')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'belum tersedia')
+
+    def test_import_command_is_repeatable(self):
+        import os
+        import tempfile
+        from io import StringIO
+        from django.core.management import call_command
+        from .models import BacaanHarian, TemaBulan
+        with tempfile.TemporaryDirectory() as tmp:
+            bacaan_csv = os.path.join(tmp, 'b.csv')
+            tema_csv = os.path.join(tmp, 't.csv')
+            with open(bacaan_csv, 'w', encoding='utf-8') as f:
+                f.write('tanggal,urutan,keterangan,warna,bacaan_1,tanggapan,bacaan_2,injil,tema\n'
+                        '2026-04-05,0,Minggu Paskah,Putih,Yeremia 31:1-6,Mazmur 118,,,\n'
+                        '2026-04-05,1,Paskah Sore,Putih,Yesaya 25:6-9,Mazmur 114,,,\n')
+            with open(tema_csv, 'w', encoding='utf-8') as f:
+                f.write('tahun,bulan,tema,keterangan\n2026,4,Mengikuti Jejak,\n')
+            call_command('import_bacaan', bacaan_csv, tema_bulan=tema_csv, stdout=StringIO())
+            call_command('import_bacaan', bacaan_csv, tema_bulan=tema_csv, stdout=StringIO())
+        self.assertEqual(BacaanHarian.objects.count(), 2)
+        self.assertEqual(TemaBulan.objects.count(), 1)
+        self.assertEqual(BacaanHarian.objects.last().keterangan, 'Paskah Sore')

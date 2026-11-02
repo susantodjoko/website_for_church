@@ -898,3 +898,55 @@ ul { list-style: none; }
 .ministry-detail__img { width: 100%; max-height: 420px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: 2rem; }
 .ministry-detail__text { font-size: 1.05rem; line-height: 1.9; color: var(--color-text); }
 .ministry-detail__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.5rem; }
+
+/* ===========================
+   BACAAN HARIAN
+   =========================== */
+.bacaan { max-width: 760px; }
+.bacaan__nav { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.bacaan__nav-link { color: var(--color-primary); font-weight: 600; white-space: nowrap; }
+.bacaan__range { text-align: center; display: flex; flex-direction: column; font-family: var(--font-serif); font-size: 1.15rem; }
+.bacaan__range a { font-family: var(--font-sans); font-size: 0.85rem; color: var(--color-primary); }
+.bacaan__theme { text-align: center; color: var(--color-text-muted); margin-bottom: var(--space-sm); }
+.bacaan__theme span { font-weight: 600; color: var(--color-text); }
+.bacaan__theme small { display: block; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
+.bacaan__days { display: flex; flex-direction: column; gap: var(--space-xs); margin-top: var(--space-md); }
+.bacaan__source { margin-top: var(--space-lg); font-size: 0.85rem; color: var(--color-text-muted); text-align: center; }
+.bacaan__source a { color: var(--color-primary); }
+
+.bacaan-day { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-white); }
+.bacaan-day--today { border-color: var(--color-primary); box-shadow: var(--shadow-sm); }
+.bacaan-day__summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem; padding: var(--space-sm) var(--space-md); cursor: pointer; list-style: none; }
+.bacaan-day__summary::-webkit-details-marker { display: none; }
+.bacaan-day__summary::after { content: '+'; margin-left: auto; color: var(--color-primary); font-weight: 700; }
+.bacaan-day[open] .bacaan-day__summary::after { content: '\2212'; }
+.bacaan-day__name { font-family: var(--font-serif); font-weight: 700; font-size: 1.1rem; min-width: 5rem; }
+.bacaan-day__date { color: var(--color-text-muted); font-size: 0.9rem; }
+.bacaan-day__badge { background: var(--color-primary); color: var(--color-white); border-radius: 999px; padding: 0 0.6rem; font-size: 0.75rem; font-weight: 600; }
+.bacaan-day__occasion { font-size: 0.85rem; color: var(--color-accent); font-weight: 600; }
+.bacaan-day__body { padding: 0 var(--space-md) var(--space-md); border-top: 1px solid var(--color-border); }
+
+.bacaan-entry { padding-top: var(--space-sm); }
+.bacaan-entry + .bacaan-entry { margin-top: var(--space-sm); border-top: 1px dashed var(--color-border); }
+.bacaan-entry__title { font-family: var(--font-serif); font-size: 1rem; margin-bottom: 0.25rem; }
+.bacaan-entry__tema { font-style: italic; margin-bottom: 0.25rem; }
+.bacaan-entry__warna { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: var(--space-xs); }
+.bacaan-entry__list { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem var(--space-sm); }
+.bacaan-entry__list dt { color: var(--color-text-muted); font-size: 0.9rem; }
+.bacaan-entry__list a { color: var(--color-primary); font-weight: 500; }
+.bacaan-entry__list a:hover { text-decoration: underline; }
+.bacaan-entry__or { color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0.35rem; }
+.bacaan-entry__none { padding-top: var(--space-sm); color: var(--color-text-muted); }
+
+.bacaan-today { background: var(--color-light); border-bottom: 1px solid var(--color-border); padding: var(--space-sm) 0; }
+.bacaan-today__inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.35rem 1rem; font-size: 0.95rem; }
+.bacaan-today__label { font-family: var(--font-serif); font-weight: 700; }
+.bacaan-today__refs a { color: var(--color-primary); }
+.bacaan-today__all { font-weight: 600; color: var(--color-primary); }
+
+@media (max-width: 600px) {
+  .bacaan__nav-link { font-size: 0.85rem; }
+  .bacaan__range { font-size: 1rem; }
+  .bacaan-entry__list { grid-template-columns: 1fr; gap: 0 0; }
+  .bacaan-entry__list dd { margin-bottom: 0.4rem; }
+}

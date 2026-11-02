@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2026-10-27b">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2026-11-02a">
   {% block extra_css %}{% endblock %}
 </head>
 
@@ -35,6 +35,8 @@
        class="{% if request.resolver_match.url_name == 'sermon_list' or request.resolver_match.url_name == 'sermon_detail' %}active{% endif %}">Khotbah</a></li>
     <li><a href="{% url 'website:warta_list' %}"
        class="{% if request.resolver_match.url_name == 'warta_list' or request.resolver_match.url_name == 'warta_detail' %}active{% endif %}">Publikasi</a></li>
+    <li><a href="{% url 'website:bacaan' %}"
+       class="{% if request.resolver_match.url_name == 'bacaan' %}active{% endif %}">Bacaan</a></li>
     <li><a href="{% url 'website:event_list' %}"
        class="{% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">Kegiatan</a></li>
     <li><a href="{% url 'website:gallery' %}"

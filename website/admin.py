@@ -3,7 +3,7 @@ from django.db import models as db_models
 from django.forms.widgets import ClearableFileInput
 from django_summernote.admin import SummernoteModelAdmin
 from church_site.admin_sites import content_admin
-from .models import HeroSlide, SermonSeries, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, AboutValue, Pendeta, WartaJemaat, Album, Photo, ContactMessage
+from .models import HeroSlide, SermonSeries, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, AboutValue, Pendeta, WartaJemaat, Album, Photo, ContactMessage, BacaanHarian, TemaBulan
 
 
 class FileInputNoAccept(ClearableFileInput):
@@ -97,6 +97,16 @@ class ContactMessageAdmin(admin.ModelAdmin):
     readonly_fields = ['name', 'email', 'message_type', 'message', 'submitted_at']
 
 
+class BacaanHarianAdmin(admin.ModelAdmin):
+    list_display = ['tanggal', 'keterangan', 'bacaan_1', 'tanggapan', 'bacaan_2', 'injil']
+    date_hierarchy = 'tanggal'
+    search_fields = ['keterangan', 'bacaan_1', 'tanggapan', 'bacaan_2', 'injil', 'tema']
+
+
+class TemaBulanAdmin(admin.ModelAdmin):
+    list_display = ['tahun', 'bulan', 'tema', 'keterangan']
+
+
 # ── Default admin site (superusers) ──────────────────────────────────────────
 admin.site.register(HeroSlide, HeroSlideAdmin)
 admin.site.register(Topic, TopicAdmin)
@@ -109,6 +119,8 @@ admin.site.register(AboutPage, AboutPageAdmin)
 admin.site.register(WartaJemaat, WartaJemaatAdmin)
 admin.site.register(Album, AlbumAdmin)
 admin.site.register(ContactMessage, ContactMessageAdmin)
+admin.site.register(BacaanHarian, BacaanHarianAdmin)
+admin.site.register(TemaBulan, TemaBulanAdmin)
 
 # ── Content admin site (content editors) ─────────────────────────────────────
 content_admin.register(HeroSlide, HeroSlideAdmin)
@@ -122,3 +134,5 @@ content_admin.register(AboutPage, AboutPageAdmin)
 content_admin.register(WartaJemaat, WartaJemaatAdmin)
 content_admin.register(Album, AlbumAdmin)
 content_admin.register(ContactMessage, ContactMessageAdmin)
+content_admin.register(BacaanHarian, BacaanHarianAdmin)
+content_admin.register(TemaBulan, TemaBulanAdmin)

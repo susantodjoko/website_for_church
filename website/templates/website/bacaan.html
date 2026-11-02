@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Bacaan Alkitab Harian — GKJ Salatiga{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <div class="container">
+    <h1 class="page-header__title">Bacaan Alkitab Harian</h1>
+    <p class="page-header__sub">Daftar Bacaan Sinode GKJ</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container bacaan">
+    <nav class="bacaan__nav" aria-label="Pilih minggu">
+      <a href="?minggu={{ prev_week|date:'Y-m-d' }}" class="bacaan__nav-link">&larr; Minggu lalu</a>
+      <div class="bacaan__range">
+        <strong>{{ range_label }}</strong>
+        {% if not is_this_week %}<a href="{% url 'website:bacaan' %}">Kembali ke minggu ini</a>{% endif %}
+      </div>
+      <a href="?minggu={{ next_week|date:'Y-m-d' }}" class="bacaan__nav-link">Minggu depan &rarr;</a>
+    </nav>
+
+    {% for theme in themes %}
+    <p class="bacaan__theme">
+      <span>Tema {{ theme.bulan }}:</span> {{ theme.tema }}
+      {% if theme.keterangan %}<small>{{ theme.keterangan }}</small>{% endif %}
+    </p>
+    {% endfor %}
+
+    {% if has_entries %}
+    <div class="bacaan__days">
+      {% for day in days %}
+      <details class="bacaan-day{% if day.is_today %} bacaan-day--today{% endif %}"{% if day.is_today %} open{% endif %}>
+        <summary class="bacaan-day__summary">
+          <span class="bacaan-day__name">{{ day.hari }}</span>
+          <span class="bacaan-day__date">{{ day.tanggal }}</span>
+          {% if day.is_today %}<span class="bacaan-day__badge">Hari ini</span>{% endif %}
+          {% for entry in day.entries %}{% if entry.keterangan %}
+          <span class="bacaan-day__occasion">{{ entry.keterangan }}</span>
+          {% endif %}{% endfor %}
+        </summary>
+        <div class="bacaan-day__body">
+          {% for entry in day.entries %}
+          <div class="bacaan-entry">
+            {% if day.entries|length > 1 %}<h3 class="bacaan-entry__title">{{ entry.keterangan }}</h3>{% endif %}
+            {% if entry.tema %}<p class="bacaan-entry__tema">Tema: {{ entry.tema }}</p>{% endif %}
+            {% if entry.warna %}<p class="bacaan-entry__warna">Warna liturgi: {{ entry.warna }}</p>{% endif %}
+            <dl class="bacaan-entry__list">
+              {% for label, refs in entry.readings %}
+              <dt>{{ label }}</dt>
+              <dd>
+                {% for ref, url in refs %}
+                  {% if not forloop.first %}<span class="bacaan-entry__or">atau</span>{% endif %}
+                  <a href="{{ url }}" target="_blank" rel="noopener">{{ ref }} <span aria-hidden="true">&#8599;</span></a>
+                {% endfor %}
+              </dd>
+              {% endfor %}
+            </dl>
+          </div>
+          {% empty %}
+          <p class="bacaan-entry__none">Tidak ada bacaan untuk hari ini.</p>
+          {% endfor %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+    <p class="bacaan__source">
+      Daftar bacaan dari Sinode Gereja-Gereja Kristen Jawa. Klik ayat untuk membaca teksnya di
+      <a href="https://alkitab.sabda.org" target="_blank" rel="noopener">alkitab.sabda.org</a>.
+    </p>
+    {% else %}
+    <div class="empty-state">
+      <p>Daftar bacaan untuk minggu ini belum tersedia.</p>
+      <a href="{% url 'website:bacaan' %}" class="btn btn--outline">Ke minggu ini</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

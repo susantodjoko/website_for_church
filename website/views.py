@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Prefetch, Q
-from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album
+from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album, BacaanHarian, TemaBulan
 from django.core.paginator import Paginator
 from datetime import date, timedelta
+from zoneinfo import ZoneInfo
+from django.utils import timezone
 from members.models import Member
 
 
@@ -43,6 +45,7 @@ def home(request):
         'latest_news': latest_news,
         'weekly_docs': weekly_docs,
         'birthdays': birthdays,
+        'bacaan_today': BacaanHarian.objects.filter(tanggal=_jakarta_today()),
     })
 
 
@@ -184,3 +187,59 @@ def giving(request):
 def contact(request):
     # The message form is switched off; visitors reach the office via WhatsApp.
     return render(request, 'website/contact.html')
+
+
+HARI = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
+BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+         'Agustus', 'September', 'Oktober', 'November', 'Desember']
+
+
+def _jakarta_today():
+    # The server clock is UTC; the daily reading should turn over at midnight WIB
+    return timezone.localdate(timezone=ZoneInfo('Asia/Jakarta'))
+
+
+def bacaan(request):
+    today = _jakarta_today()
+    try:
+        chosen = date.fromisoformat(request.GET.get('minggu', ''))
+    except ValueError:
+        chosen = today
+    monday = chosen - timedelta(days=chosen.weekday())
+    sunday = monday + timedelta(days=6)
+
+    by_date = {}
+    for entry in BacaanHarian.objects.filter(tanggal__range=(monday, sunday)):
+        by_date.setdefault(entry.tanggal, []).append(entry)
+    days = []
+    for i in range(7):
+        d = monday + timedelta(days=i)
+        days.append({
+            'date': d,
+            'hari': HARI[i],
+            'tanggal': f'{d.day} {BULAN[d.month - 1]} {d.year}',
+            'entries': by_date.get(d, []),
+            'is_today': d == today,
+        })
+
+    months = {(monday.year, monday.month), (sunday.year, sunday.month)}
+    themes = [
+        {'bulan': BULAN[t.bulan - 1], 'tema': t.tema, 'keterangan': t.keterangan}
+        for t in TemaBulan.objects.all()
+        if (t.tahun, t.bulan) in months
+    ]
+    if monday.month == sunday.month:
+        range_label = f'{monday.day}–{sunday.day} {BULAN[sunday.month - 1]} {sunday.year}'
+    else:
+        range_label = (f'{monday.day} {BULAN[monday.month - 1]} – '
+                       f'{sunday.day} {BULAN[sunday.month - 1]} {sunday.year}')
+
+    return render(request, 'website/bacaan.html', {
+        'days': days,
+        'has_entries': bool(by_date),
+        'themes': themes,
+        'range_label': range_label,
+        'is_this_week': monday <= today <= sunday,
+        'prev_week': monday - timedelta(days=7),
+        'next_week': monday + timedelta(days=7),
+    })

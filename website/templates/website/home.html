@@ -51,6 +51,24 @@
   </div>
 </section>
 
+<!-- BACAAN HARI INI -->
+{% if bacaan_today %}
+<section class="bacaan-today">
+  <div class="container bacaan-today__inner">
+    <span class="bacaan-today__label">Bacaan Hari Ini</span>
+    {% for entry in bacaan_today %}
+    <span class="bacaan-today__refs">
+      {% if bacaan_today|length > 1 and entry.keterangan %}<em>{{ entry.keterangan }}:</em>{% endif %}
+      {% for label, refs in entry.readings %}{% with ref=refs.0 %}
+        <a href="{{ ref.1 }}" target="_blank" rel="noopener">{{ ref.0 }}</a>{% if not forloop.last %} &middot;{% endif %}
+      {% endwith %}{% endfor %}
+    </span>
+    {% endfor %}
+    <a href="{% url 'website:bacaan' %}" class="bacaan-today__all">Bacaan minggu ini &rarr;</a>
+  </div>
+</section>
+{% endif %}
+
 <!-- FEATURED SERMONS -->
 {% if featured_sermons %}
 <section class="section">

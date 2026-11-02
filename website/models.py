@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.text import slugify
 from PIL import Image as PilImage
 import os
+import re
+from urllib.parse import quote
 
 # Create your models here.
 class HeroSlide(models.Model):
@@ -270,3 +272,79 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f'{self.name} — {self.get_message_type_display()}'
+
+
+SABDA_PASSAGE_URL = 'https://alkitab.sabda.org/passage.php?passage='
+# Books with a single chapter, written without a chapter number ("3 Yohanes 9-12")
+SINGLE_CHAPTER_BOOKS = ('Obaja', 'Filemon', '2 Yohanes', '3 Yohanes', 'Yudas')
+
+
+def sabda_url(ref):
+    """Link to a passage on alkitab.sabda.org, e.g. 'Yohanes 1: (1-9), 10-18'."""
+    ref = ref.replace('Kisah Pr. Rasul', 'Kisah Para Rasul')
+    ref = re.sub(r'\s*\(', ',', ref).replace(')', '')
+    ref = re.sub(r':,', ':', ref)
+    ref = re.sub(r',+', ',', ref)
+    ref = re.sub(r'\s*([,;:])\s*', r'\1', ref)
+    ref = re.sub(r',(\d+:)', r';\1', ref)  # "3:16-22, 4:18-20": new chapter after the comma
+    ref = re.sub(r'(\d)[ab]\b', r'\1', ref)
+    for book in SINGLE_CHAPTER_BOOKS:
+        if ref.startswith(book + ' ') and ':' not in ref:
+            ref = ref.replace(book + ' ', book + ' 1:', 1)
+    return SABDA_PASSAGE_URL + quote(ref.strip(), safe=':,;-')
+
+
+class BacaanHarian(models.Model):
+    """One entry of the Sinode GKJ daily Bible reading list (Daftar Bacaan Harian)."""
+    tanggal = models.DateField(db_index=True)
+    urutan = models.PositiveSmallIntegerField(
+        default=0, help_text='Urutan bila ada lebih dari satu ibadah pada tanggal yang sama.',
+    )
+    keterangan = models.CharField(
+        max_length=200, blank=True, help_text='Mis. "Minggu Adven I" atau "Paskah Sore".',
+    )
+    warna = models.CharField('Warna liturgi', max_length=50, blank=True)
+    bacaan_1 = models.CharField('Bacaan I', max_length=200, blank=True)
+    tanggapan = models.CharField(max_length=200, blank=True)
+    bacaan_2 = models.CharField('Bacaan II', max_length=200, blank=True)
+    injil = models.CharField('Bacaan Injil', max_length=200, blank=True)
+    tema = models.CharField(max_length=300, blank=True)
+
+    class Meta:
+        ordering = ['tanggal', 'urutan']
+        verbose_name = 'Bacaan Harian'
+        verbose_name_plural = 'Bacaan Harian'
+
+    def __str__(self):
+        return f'{self.tanggal} {self.keterangan}'.strip()
+
+    def readings(self):
+        """[(label, [(ref, url), ...]), ...]; "A atau B" becomes two choices.
+
+        The psalm (tanggapan) is stored but not shown on the site.
+        """
+        fields = [
+            ('Bacaan I', self.bacaan_1),
+            ('Bacaan II', self.bacaan_2),
+            ('Injil', self.injil),
+        ]
+        return [
+            (label, [(ref, sabda_url(ref)) for ref in text.split(' atau ')])
+            for label, text in fields if text
+        ]
+
+
+class TemaBulan(models.Model):
+    tahun = models.PositiveSmallIntegerField()
+    bulan = models.PositiveSmallIntegerField()
+    tema = models.CharField(max_length=300)
+    keterangan = models.CharField(max_length=200, blank=True, help_text='Mis. "Bulan Keluarga".')
+
+    class Meta:
+        ordering = ['tahun', 'bulan']
+        unique_together = [('tahun', 'bulan')]
+        verbose_name = 'Tema Bulan'
+        verbose_name_plural = 'Tema Bulan'
+
+    def __str__(self):
+        return f'{self.bulan}/{self.tahun}: {self.tema}'
