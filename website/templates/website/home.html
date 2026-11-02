@@ -22,6 +22,8 @@
 
 
 
+<!-- First screen: hero plus today's reading, so the reading is visible without scrolling -->
+<div class="home-intro">
 <!-- HERO SECTION -->
 <section class="hero">
   {% if hero and hero.background_image %}
@@ -51,23 +53,39 @@
   </div>
 </section>
 
-<!-- BACAAN HARI INI -->
-{% if bacaan_today %}
+<!-- BACAAN HARI INI + WARTA & LITURGI -->
+{% if bacaan_today or weekly_docs %}
 <section class="bacaan-today">
-  <div class="container bacaan-today__inner">
-    <span class="bacaan-today__label">Bacaan Hari Ini</span>
-    {% for entry in bacaan_today %}
-    <span class="bacaan-today__refs">
-      {% if bacaan_today|length > 1 and entry.keterangan %}<em>{{ entry.keterangan }}:</em>{% endif %}
-      {% for label, refs in entry.readings %}{% with ref=refs.0 %}
-        <a href="{{ ref.1 }}" target="_blank" rel="noopener">{{ ref.0 }}</a>{% if not forloop.last %} &middot;{% endif %}
-      {% endwith %}{% endfor %}
-    </span>
-    {% endfor %}
-    <a href="{% url 'website:bacaan' %}" class="bacaan-today__all">Bacaan minggu ini &rarr;</a>
+  <div class="container">
+    {% if bacaan_today %}
+    <div class="bacaan-today__inner">
+      <span class="bacaan-today__label">Bacaan Hari Ini</span>
+      {% for entry in bacaan_today %}
+      <span class="bacaan-today__refs">
+        {% if bacaan_today|length > 1 and entry.keterangan %}<em>{{ entry.keterangan }}:</em>{% endif %}
+        {% for label, refs in entry.readings %}{% with ref=refs.0 %}
+          <a href="{{ ref.1 }}" target="_blank" rel="noopener">{{ ref.0 }}</a>{% if not forloop.last %} &middot;{% endif %}
+        {% endwith %}{% endfor %}
+      </span>
+      {% endfor %}
+      <a href="{% url 'website:bacaan' %}" class="bacaan-today__all">Bacaan minggu ini &rarr;</a>
+    </div>
+    {% endif %}
+    {% if weekly_docs %}
+    <div class="bacaan-today__inner">
+      <span class="bacaan-today__label">Warta &amp; Liturgi Minggu Ini</span>
+      <span class="bacaan-today__refs">
+        {% for doc in weekly_docs %}
+          <a href="{% url 'website:warta_detail' doc.slug %}">{{ doc.title }}</a>{% if not forloop.last %} &middot;{% endif %}
+        {% endfor %}
+      </span>
+      <a href="{% url 'website:warta_list' %}" class="bacaan-today__all">Semua Publikasi &rarr;</a>
+    </div>
+    {% endif %}
   </div>
 </section>
 {% endif %}
+</div>
 
 <!-- FEATURED SERMONS -->
 {% if featured_sermons %}
@@ -96,6 +114,35 @@
 </section>
 {% endif %}
 
+<!-- LATEST NEWS -->
+{% if latest_news %}
+<section id="berita" class="section section--light" style="scroll-margin-top: 80px;">
+  <div class="container">
+    <h2 class="section__title">Berita Terbaru</h2>
+    <div class="card-grid">
+      {% for item in latest_news %}
+      <a href="{% url 'website:warta_detail' item.slug %}" class="card news-card">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card__img">
+        {% endif %}
+        <div class="card__body">
+          <p class="card__meta">{{ item.date|date:"j F Y" }}{% if item.event %} &middot; {{ item.event.title }}{% endif %}</p>
+          <h3 class="card__title">{{ item.title }}</h3>
+          {% if item.content %}
+            <p class="card__text">{{ item.content|striptags|truncatewords:20 }}</p>
+          {% endif %}
+          <span class="news-card__more">Baca selengkapnya &rarr;</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="section__cta">
+      <a href="{% url 'website:warta_list' %}?category=berita" class="btn btn--secondary">Lihat Semua Berita</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- MINISTRIES -->
 {% if ministries %}
 <section id="komisi" class="section section--dark">
@@ -111,29 +158,6 @@
       <a href="{% url 'website:ministry_list' %}" class="btn btn--outline-light">Lihat Semua Komisi ({{ ministry_total }})</a>
     </div>
     {% endif %}
-  </div>
-</section>
-{% endif %}
-
-<!-- SERVICE TIMES -->
-{% if service_times %}
-<section class="section">
-  <div class="container">
-    <h2 class="section__title">Bergabunglah Dengan Kami</h2>
-    <div class="service-grid">
-      {% for service in service_times %}
-      <div class="service-card {% if service.is_online %}service-card--online{% endif %}">
-        <h3 class="service-card__name">{{ service.campus_name }}</h3>
-        <p class="service-card__times">{{ service.times }}</p>
-        <p class="service-card__address">{{ service.address }}</p>
-        <!--- <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }} </a> --->
-       <a href="https://www.google.com/maps/search/?api=1&query={{ service.address|urlencode }}"
-           target="_blank" rel="noopener" class="btn btn--outline" style="margin-top: 0.5rem;">
-          Petunjuk Arah →
-        </a>
-      </div>
-      {% endfor %}
-    </div>
   </div>
 </section>
 {% endif %}
@@ -166,45 +190,8 @@
   </div>
 </section>
 {% endif %}
-{% if latest_news or weekly_docs %}
-<section id="berita" class="section section--light" style="scroll-margin-top: 80px;">
-  <div class="container">
-    <h2 class="section__title">Berita Terbaru</h2>
-    {% if latest_news %}
-    <div class="card-grid">
-      {% for item in latest_news %}
-      <a href="{% url 'website:warta_detail' item.slug %}" class="card news-card">
-        {% if item.image %}
-          <img src="{{ item.image.url }}" alt="{{ item.title }}" class="card__img">
-        {% endif %}
-        <div class="card__body">
-          <p class="card__meta">{{ item.date|date:"j F Y" }}{% if item.event %} &middot; {{ item.event.title }}{% endif %}</p>
-          <h3 class="card__title">{{ item.title }}</h3>
-          {% if item.content %}
-            <p class="card__text">{{ item.content|striptags|truncatewords:20 }}</p>
-          {% endif %}
-          <span class="news-card__more">Baca selengkapnya &rarr;</span>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-    <div class="section__cta">
-      <a href="{% url 'website:warta_list' %}?category=berita" class="btn btn--secondary">Lihat Semua Berita</a>
-    </div>
-    {% endif %}
-    {% if weekly_docs %}
-    <div class="weekly-docs">
-      <span class="weekly-docs__label">Warta &amp; Liturgi Minggu Ini:</span>
-      {% for doc in weekly_docs %}
-        <a href="{% url 'website:warta_detail' doc.slug %}">{{ doc.title }}</a>
-      {% endfor %}
-      <a href="{% url 'website:warta_list' %}" class="weekly-docs__all">Semua Publikasi &rarr;</a>
-    </div>
-    {% endif %}
-  </div>
-</section>
-{% endif %}
 
+<!-- BIRTHDAYS -->
 {% if birthdays %}
 <section class="section section--light">
   <div class="container">
@@ -220,6 +207,29 @@
             {{ item.date|date:"l, d F" }}
           {% endif %}
         </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- SERVICE TIMES -->
+{% if service_times %}
+<section class="section">
+  <div class="container">
+    <h2 class="section__title">Bergabunglah Dengan Kami</h2>
+    <div class="service-grid">
+      {% for service in service_times %}
+      <div class="service-card {% if service.is_online %}service-card--online{% endif %}">
+        <h3 class="service-card__name">{{ service.campus_name }}</h3>
+        <p class="service-card__times">{{ service.times }}</p>
+        <p class="service-card__address">{{ service.address }}</p>
+        <!--- <a href="{{ service.link_url }}" class="btn btn--primary">{{ service.link_label }} </a> --->
+       <a href="https://www.google.com/maps/search/?api=1&query={{ service.address|urlencode }}"
+           target="_blank" rel="noopener" class="btn btn--outline" style="margin-top: 0.5rem;">
+          Petunjuk Arah →
+        </a>
       </div>
       {% endfor %}
     </div>
