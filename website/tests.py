@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from datetime import date, timedelta
 from .models import HeroSlide, Sermon, SermonSeries, Ministry, ServiceTime, Event, AboutPage, WartaJemaat, Album, Topic
 
@@ -532,3 +532,34 @@ class BacaanHarianTest(TestCase):
         self.assertEqual(BacaanHarian.objects.count(), 2)
         self.assertEqual(TemaBulan.objects.count(), 1)
         self.assertEqual(BacaanHarian.objects.last().keterangan, 'Paskah Sore')
+
+
+class SeoTest(TestCase):
+    def test_robots_txt_blocks_staff_areas_and_points_to_sitemap(self):
+        response = self.client.get('/robots.txt')
+        self.assertEqual(response['Content-Type'], 'text/plain')
+        self.assertContains(response, 'Disallow: /members/')
+        self.assertContains(response, 'Sitemap: https://gkjsalatiga.org/sitemap.xml')
+
+    @override_settings(ALLOWED_HOSTS=['www.gkjsalatiga.org'])
+    def test_sitemap_lists_published_content_on_site_url(self):
+        Sermon.objects.create(title='Iman', pastor='P', date=date(2026, 11, 1), description='x')
+        WartaJemaat.objects.create(title='Draft', date=date(2026, 11, 1), is_published=False)
+        response = self.client.get('/sitemap.xml', HTTP_HOST='www.gkjsalatiga.org')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '<loc>https://gkjsalatiga.org/sermons/iman-2026-11-01/</loc>')
+        self.assertContains(response, '<loc>https://gkjsalatiga.org/bacaan/</loc>')
+        self.assertNotContains(response, 'draft')
+        self.assertNotContains(response, 'www.gkjsalatiga.org')
+
+    def test_home_head_tags(self):
+        response = self.client.get('/')
+        self.assertContains(response, '<html lang="id">')
+        self.assertContains(response, '<link rel="canonical" href="https://gkjsalatiga.org/">')
+        self.assertContains(response, '<meta property="og:image" content="https://gkjsalatiga.org/static/images/logo.png">')
+        self.assertContains(response, '"@type": "Church"')
+
+    def test_detail_page_uses_its_own_description_fallback(self):
+        WartaJemaat.objects.create(title='Warta Minggu', date=date(2026, 11, 1), content='')
+        response = self.client.get('/warta/warta-minggu-2026-11-01/')
+        self.assertContains(response, '<meta name="description" content="Warta Minggu — GKJ Salatiga.">')

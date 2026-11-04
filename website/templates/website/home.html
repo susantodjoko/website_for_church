@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}GKJ Salatiga — Welcome{% endblock %}
+{% block title %}GKJ Salatiga — Gereja Kristen Jawa Salatiga{% endblock %}
+{% block meta_description %}GKJ Salatiga (Gereja Kristen Jawa Salatiga): jadwal ibadah, khotbah, bacaan Alkitab harian, warta jemaat, dan kegiatan gereja.{% endblock %}
+{% block og_description %}GKJ Salatiga (Gereja Kristen Jawa Salatiga): jadwal ibadah, khotbah, bacaan Alkitab harian, warta jemaat, dan kegiatan gereja.{% endblock %}
+{% block og_title %}GKJ Salatiga — Gereja Kristen Jawa Salatiga{% endblock %}
+{% block structured_data %}<script type="application/ld+json">{{ church_json_ld }}</script>{% endblock %}
 
 {% block content %}{% for service in service_times %}
 {% if service.is_live_now and service.youtube_live_url %}

@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load safe_html %}
 {% block title %}{{ sermon.title }} — GKJ Salatiga{% endblock %}
-{% block meta_description %}{{ sermon.description|striptags|truncatechars:160 }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}{% if sermon.thumbnail %}{{ site_url }}{{ sermon.thumbnail.url }}{% else %}{{ default_share_image }}{% endif %}{% endblock %}
+{% block meta_description %}{% with d=sermon.description|striptags|truncatechars:160 %}{% if d %}{{ d }}{% else %}Khotbah GKJ Salatiga: {{ sermon.title }}.{% endif %}{% endwith %}{% endblock %}
 {% block og_title %}{{ sermon.title }} — GKJ Salatiga{% endblock %}
-{% block og_description %}{{ sermon.description|striptags|truncatechars:160 }}{% endblock %}
+{% block og_description %}{% with d=sermon.description|striptags|truncatechars:160 %}{% if d %}{{ d }}{% else %}Khotbah GKJ Salatiga: {{ sermon.title }}.{% endif %}{% endwith %}{% endblock %}
 
 {% block content %}
 <div class="sermon-detail">

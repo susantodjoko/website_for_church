@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}GKJ Salatiga{% endblock %}</title>
-<meta name="description" content="{% block meta_description %}Gereja Kristen Jawa Salatiga — komunitas iman, harapan, dan kasih.{% endblock %}">
-<meta property="og:title" content="{% block og_title %}GKJ Salatiga{% endblock %}">
-<meta property="og:description" content="{% block og_description %}Gereja Kristen Jawa Salatiga — komunitas iman, harapan, dan kasih.{% endblock %}">
-<meta property="og:type" content="website">
-
   {% load static %}
+  <meta name="description" content="{% block meta_description %}Gereja Kristen Jawa Salatiga — komunitas iman, harapan, dan kasih.{% endblock %}">
+  <link rel="canonical" href="{% block canonical_url %}{{ canonical_url }}{% endblock %}">
+  <meta property="og:site_name" content="GKJ Salatiga">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:title" content="{% block og_title %}GKJ Salatiga{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Gereja Kristen Jawa Salatiga — komunitas iman, harapan, dan kasih.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ default_share_image }}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any">
+  <link rel="icon" type="image/png" href="{% static 'images/favicon-32.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+  {% block structured_data %}{% endblock %}
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">

@@ -1,4 +1,9 @@
+from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
+from django.templatetags.static import static
+from django.utils.safestring import mark_safe
+import json
 from django.db.models import Prefetch, Q
 from .models import HeroSlide, Sermon, Topic, Ministry, ServiceTime, Event, AboutPage, SermonSeries, WartaJemaat, Album, BacaanHarian, TemaBulan
 from django.core.paginator import Paginator
@@ -46,7 +51,36 @@ def home(request):
         'weekly_docs': weekly_docs,
         'birthdays': birthdays,
         'bacaan_today': BacaanHarian.objects.filter(tanggal=_jakarta_today()),
+        'church_json_ld': _church_json_ld(service_times),
     })
+
+
+def _church_json_ld(service_times):
+    """schema.org "Church" data so search engines can show name, address and links."""
+    data = {
+        '@context': 'https://schema.org',
+        '@type': 'Church',
+        'name': 'GKJ Salatiga',
+        'alternateName': 'Gereja Kristen Jawa Salatiga',
+        'url': settings.SITE_URL + '/',
+        'logo': settings.SITE_URL + static('images/logo.png'),
+        'sameAs': [
+            'https://www.instagram.com/gkjsalatiga/',
+            'https://www.youtube.com/@MultimediaGKJSalatiga',
+        ],
+    }
+    main = next((st for st in service_times if not st.is_online), None)
+    if main:
+        data['address'] = {
+            '@type': 'PostalAddress',
+            'streetAddress': main.address,
+            'addressLocality': 'Salatiga',
+            'addressRegion': 'Jawa Tengah',
+            'addressCountry': 'ID',
+        }
+        data['description'] = ' '.join(main.times.split())
+    # Escape "<" so content can never close the <script> tag
+    return mark_safe(json.dumps(data, ensure_ascii=False).replace('<', '\\u003c'))
 
 
 def sermon_list(request):
@@ -243,3 +277,18 @@ def bacaan(request):
         'prev_week': monday - timedelta(days=7),
         'next_week': monday + timedelta(days=7),
     })
+
+
+def robots_txt(request):
+    # Staff areas stay out of search results
+    lines = [
+        'User-agent: *',
+        'Disallow: /admin/',
+        'Disallow: /konten/',
+        'Disallow: /jemaat/',
+        'Disallow: /members/',
+        'Disallow: /summernote/',
+        '',
+        f'Sitemap: {settings.SITE_URL}/sitemap.xml',
+    ]
+    return HttpResponse('\n'.join(lines) + '\n', content_type='text/plain')

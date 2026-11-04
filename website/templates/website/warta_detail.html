@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load safe_html %}
 {% block title %}{{ warta.title }} — GKJ Salatiga{% endblock %}
-{% block meta_description %}{{ warta.content|striptags|truncatechars:160 }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}{% if warta.image %}{{ site_url }}{{ warta.image.url }}{% else %}{{ default_share_image }}{% endif %}{% endblock %}
+{% block meta_description %}{% with d=warta.content|striptags|truncatechars:160 %}{% if d %}{{ d }}{% else %}{{ warta.title }} — GKJ Salatiga.{% endif %}{% endwith %}{% endblock %}
 {% block og_title %}{{ warta.title }} — GKJ Salatiga{% endblock %}
-{% block og_description %}{{ warta.content|striptags|truncatechars:160 }}{% endblock %}
+{% block og_description %}{% with d=warta.content|striptags|truncatechars:160 %}{% if d %}{{ d }}{% else %}{{ warta.title }} — GKJ Salatiga.{% endif %}{% endwith %}{% endblock %}
 
 {% block content %}
 <div class="sermon-detail">

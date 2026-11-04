@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
     "simple_history",
     "website",
     "members",
@@ -81,6 +82,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "website.context_processors.service_times",
+                "website.context_processors.seo",
             ],
         },
     },
@@ -131,6 +133,9 @@ USE_I18N = True
 USE_TZ = True
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Public address used for canonical links, share images and the sitemap
+SITE_URL = os.environ.get("SITE_URL", "https://gkjsalatiga.org").rstrip("/")
 
 # Use the lightweight lite theme — no Bootstrap CDN dependency
 SUMMERNOTE_THEME = 'lite'

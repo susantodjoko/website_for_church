@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{{ album.title }} — GKJ Salatiga{% endblock %}
+{% block meta_description %}Foto {{ album.title }} — Galeri GKJ Salatiga.{% endblock %}
+{% block og_description %}Foto {{ album.title }} — Galeri GKJ Salatiga.{% endblock %}
+{% block og_title %}{{ album.title }} — GKJ Salatiga{% endblock %}
+{% block og_image %}{% if album.cover_image %}{{ site_url }}{{ album.cover_image.url }}{% else %}{{ default_share_image }}{% endif %}{% endblock %}
 
 {% block extra_css %}
 <style>

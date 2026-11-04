@@ -18,7 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
+from django.templatetags.static import static as static_url
+from django.views.generic import RedirectView
 from church_site.admin_sites import content_admin, members_admin
+from website.sitemaps import sitemaps
+from website.views import robots_txt
 
 urlpatterns = [
     # Superuser admin (users, groups, full access)
@@ -30,6 +35,9 @@ urlpatterns = [
     path('', include('website.urls')),
     path('members/', include('members.urls')),
     path('summernote/', include('django_summernote.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', robots_txt),
+    path('favicon.ico', RedirectView.as_view(url=static_url('images/favicon.ico'), permanent=True)),
 ]
 
 if settings.DEBUG:
