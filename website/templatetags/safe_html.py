@@ -1,8 +1,9 @@
+import html
 import re
 
 import bleach
 from django import template
-from django.utils.html import escape
+from django.utils.html import escape, strip_tags
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -57,3 +58,19 @@ def paragraphs(value):
         lines = (line.strip() for line in value.splitlines())
         value = ''.join(f'<p>{escape(line)}</p>' for line in lines if line)
     return clean_html(value)
+
+
+_BLOCK_END_RE = re.compile(r'(</(p|div|li|h[1-6]|blockquote|tr)>|<br\s*/?>)', re.I)
+
+
+@register.filter
+def plain_text(value):
+    """Rich text as one line of plain text, for cards and meta descriptions.
+
+    Unlike striptags, words from separate paragraphs stay apart and
+    entities such as &nbsp; become real characters (escaped again on output).
+    """
+    if not value:
+        return ''
+    text = strip_tags(_BLOCK_END_RE.sub(' ', value))
+    return ' '.join(html.unescape(text).split())

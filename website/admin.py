@@ -38,7 +38,8 @@ class SermonAdmin(SummernoteModelAdmin):
     summernote_fields = ['description']
 
 
-class MinistryAdmin(admin.ModelAdmin):
+class MinistryAdmin(SummernoteModelAdmin):
+    summernote_fields = ['description']
     list_display = ['name', 'order', 'show_on_home']
     list_editable = ['order', 'show_on_home']
     ordering = ['order', 'id']

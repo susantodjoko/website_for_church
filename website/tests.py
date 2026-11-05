@@ -563,3 +563,31 @@ class SeoTest(TestCase):
         WartaJemaat.objects.create(title='Warta Minggu', date=date(2026, 11, 1), content='')
         response = self.client.get('/warta/warta-minggu-2026-11-01/')
         self.assertContains(response, '<meta name="description" content="Warta Minggu — GKJ Salatiga.">')
+
+
+class MinistryRichTextTest(TestCase):
+    RICH = '<p><b>Komisi Pemuda</b> melayani&nbsp;remaja.</p><p>Ibadah <i>setiap</i> Sabtu.</p>'
+
+    def test_plain_text_keeps_words_apart_and_decodes_entities(self):
+        from .templatetags.safe_html import plain_text
+        # &nbsp; becomes an ordinary space
+        self.assertEqual(plain_text(self.RICH), 'Komisi Pemuda melayani remaja. Ibadah setiap Sabtu.')
+        self.assertEqual(plain_text('Teks biasa\nbaris dua'), 'Teks biasa baris dua')
+
+    def test_detail_page_shows_formatting_and_cards_show_plain_text(self):
+        m = Ministry.objects.create(name='Pemuda', description=self.RICH, show_on_home=True)
+        detail = self.client.get(f'/ministries/{m.pk}/')
+        self.assertContains(detail, '<b>Komisi Pemuda</b>')
+        self.assertContains(detail, '<i>setiap</i>')
+        self.assertContains(detail, '<meta name="description" content="Komisi Pemuda melayani')
+        for url in ('/', '/ministries/'):
+            page = self.client.get(url)
+            self.assertContains(page, 'Komisi Pemuda melayani')
+            self.assertNotContains(page, '&lt;b&gt;')
+
+    def test_admin_uses_rich_text_editor(self):
+        from django.contrib.auth.models import User
+        User.objects.create_superuser('admin', 'a@example.com', 'pw')
+        self.client.login(username='admin', password='pw')
+        response = self.client.get('/admin/website/ministry/add/')
+        self.assertContains(response, 'summernote')
