@@ -5,7 +5,19 @@ import os
 import re
 from urllib.parse import quote
 
-# Create your models here.
+def shrink_image(field, max_width=1200):
+    """Resize an uploaded image in place so it is at most `max_width` px wide."""
+    if not field:
+        return
+    img = PilImage.open(field.path)
+    if img.width > max_width:
+        ratio = max_width / img.width
+        img = img.resize((max_width, int(img.height * ratio)), PilImage.LANCZOS)
+        if img.mode not in ('RGB', 'L') and field.path.lower().endswith(('.jpg', '.jpeg')):
+            img = img.convert('RGB')
+        img.save(field.path, optimize=True, quality=85)
+
+
 class HeroSlide(models.Model):
     headline = models.CharField(max_length=200)
     subheadline = models.CharField(max_length=300)
@@ -81,6 +93,10 @@ class Ministry(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='ministry/', blank=True)
+    youtube_url = models.URLField(
+        'Link YouTube', blank=True,
+        help_text='Opsional. Tempel link video YouTube (mis. https://www.youtube.com/watch?v=...). Video akan tampil di halaman.',
+    )
     order = models.PositiveIntegerField(default=0)
     show_on_home = models.BooleanField(
         'Tampilkan di Beranda', default=False,
@@ -128,15 +144,7 @@ class Event(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        if self.image:
-            path = self.image.path
-            img = PilImage.open(path)
-            # Resize if wider than 1200px, preserving aspect ratio
-            if img.width > 1200:
-                ratio = 1200 / img.width
-                new_size = (1200, int(img.height * ratio))
-                img = img.resize(new_size, PilImage.LANCZOS)
-                img.save(path, optimize=True, quality=85)
+        shrink_image(self.image)
 
 
 class AboutPage(models.Model):
@@ -147,16 +155,31 @@ class AboutPage(models.Model):
 
 
 class AboutValue(models.Model):
+    """One part of the Sejarah (history) article on the About page."""
     page = models.ForeignKey(AboutPage, on_delete=models.CASCADE, related_name='values')
-    title = models.CharField(max_length=100)
-    body = models.TextField()
-    order = models.PositiveIntegerField(default=0)
+    title = models.CharField('Judul bagian', max_length=100)
+    body = models.TextField('Isi')
+    image = models.ImageField(
+        'Foto (opsional)', upload_to='about/sejarah/', blank=True,
+        help_text='Mis. foto gedung gereja lama atau jemaat mula-mula. Otomatis diperkecil ke lebar 1200px.',
+    )
+    image_caption = models.CharField(
+        'Keterangan foto', max_length=200, blank=True,
+        help_text='Mis. "Gedung gereja tahun 1950-an".',
+    )
+    order = models.PositiveIntegerField('Urutan', default=0)
 
     class Meta:
         ordering = ['order']
+        verbose_name = 'Bagian Sejarah'
+        verbose_name_plural = 'Sejarah Gereja'
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        shrink_image(self.image)
     
 
 class Pendeta(models.Model):
@@ -187,6 +210,10 @@ class WartaJemaat(models.Model):
     content = models.TextField(blank=True)
     image = models.ImageField(upload_to='warta/', blank=True)
     pdf_file = models.FileField(upload_to='warta_pdf/', blank=True)
+    youtube_url = models.URLField(
+        'Link YouTube', blank=True,
+        help_text='Opsional. Tempel link video YouTube (mis. https://www.youtube.com/watch?v=...). Video akan tampil di halaman.',
+    )
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='warta', db_index=True)
     event = models.ForeignKey(
         Event, null=True, blank=True, on_delete=models.SET_NULL,

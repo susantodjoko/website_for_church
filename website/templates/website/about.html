@@ -68,22 +68,25 @@
 {% if about.values.exists %}
 <hr style="border: none; border-top: 1px solid var(--color-border); margin: 0;">
 
-<!-- Section 3: Nilai-Nilai -->
-<section id="nilai-nilai" class="section section--light" style="scroll-margin-top: 120px;">
+<!-- Section 3: Sejarah — one centred article, each part with an optional photo -->
+<section id="sejarah" class="section section--light" style="scroll-margin-top: 120px;">
   <div class="container">
     <p style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-primary); margin-bottom: 0.5rem; text-align: center;">Sejarah</p>
     <h2 style="text-align: center; font-size: 1.75rem; font-weight: 800; margin-bottom: 2.5rem; color: var(--color-text);">Sejarah Gereja</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto;">
-      {% for value in about.values.all %}
-      <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.5rem; position: relative;">
-        <div style="width: 36px; height: 36px; background: var(--color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-          <span style="color: #fff; font-weight: 800; font-size: 0.85rem;">{{ forloop.counter }}</span>
-        </div>
-        <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--color-text);">{{ value.title }}</h3>
-        <div class="prose-text" style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.7;">{{ value.body|paragraphs }}</div>
+    <article class="history">
+      {% for part in about.values.all %}
+      <div class="history__part">
+        <h3 class="history__title">{{ part.title }}</h3>
+        {% if part.image %}
+        <figure class="history__figure">
+          <img src="{{ part.image.url }}" alt="{{ part.image_caption|default:part.title }}" loading="lazy">
+          {% if part.image_caption %}<figcaption>{{ part.image_caption }}</figcaption>{% endif %}
+        </figure>
+        {% endif %}
+        <div class="prose-text history__text">{{ part.body|paragraphs }}</div>
       </div>
       {% endfor %}
-    </div>
+    </article>
   </div>
 </section>
 {% endif %}

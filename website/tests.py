@@ -591,3 +591,69 @@ class MinistryRichTextTest(TestCase):
         self.client.login(username='admin', password='pw')
         response = self.client.get('/admin/website/ministry/add/')
         self.assertContains(response, 'summernote')
+
+
+class YoutubeIdExtractTest(TestCase):
+    def test_common_url_formats(self):
+        from .views import _extract_youtube_id
+        vid = 'dQw4w9WgXcQ'
+        for url in [
+            f'https://www.youtube.com/watch?v={vid}',
+            f'https://youtube.com/watch?v={vid}&t=30s',
+            f'https://m.youtube.com/watch?feature=share&v={vid}',
+            f'https://youtu.be/{vid}?si=abc',
+            f'https://www.youtube.com/shorts/{vid}',
+            f'https://www.youtube.com/live/{vid}?feature=shared',
+            f'https://www.youtube.com/embed/{vid}',
+        ]:
+            self.assertEqual(_extract_youtube_id(url), vid, url)
+
+    def test_invalid_or_empty(self):
+        from .views import _extract_youtube_id
+        self.assertEqual(_extract_youtube_id(''), '')
+        self.assertEqual(_extract_youtube_id(None), '')
+        self.assertEqual(_extract_youtube_id('https://vimeo.com/123'), '')
+
+
+class WartaMinistryVideoTest(TestCase):
+    def test_warta_shows_video_when_url_set(self):
+        w = WartaJemaat.objects.create(
+            title='Berita Video', date=date(2026, 11, 1), category='berita',
+            youtube_url='https://youtu.be/dQw4w9WgXcQ',
+        )
+        r = self.client.get(reverse('website:warta_detail', kwargs={'slug': w.slug}))
+        self.assertContains(r, 'youtube-nocookie.com/embed/dQw4w9WgXcQ')
+
+    def test_warta_no_video_when_blank(self):
+        w = WartaJemaat.objects.create(title='Tanpa Video', date=date(2026, 11, 1), category='berita')
+        r = self.client.get(reverse('website:warta_detail', kwargs={'slug': w.slug}))
+        self.assertNotContains(r, 'video-embed')
+
+    def test_ministry_shows_video_when_url_set(self):
+        m = Ministry.objects.create(
+            name='Komisi Pemuda', description='Desc',
+            youtube_url='https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        )
+        r = self.client.get(reverse('website:ministry_detail', kwargs={'pk': m.pk}))
+        self.assertContains(r, 'youtube-nocookie.com/embed/dQw4w9WgXcQ')
+
+    def test_ministry_no_video_when_blank(self):
+        m = Ministry.objects.create(name='Komisi Anak', description='Desc')
+        r = self.client.get(reverse('website:ministry_detail', kwargs={'pk': m.pk}))
+        self.assertNotContains(r, 'video-embed')
+
+
+class AboutHistoryTest(TestCase):
+    def test_history_renders_as_article_with_caption(self):
+        from .models import AboutValue
+        page = AboutPage.objects.create(mission_statement='Visi')
+        AboutValue.objects.create(
+            page=page, title='Latar Belakang', body='Baris satu\nBaris dua',
+            image_caption='Gedung gereja lama',
+        )
+        r = self.client.get(reverse('website:about'))
+        self.assertContains(r, 'class="history"')
+        self.assertContains(r, 'Latar Belakang')
+        self.assertContains(r, '<p>Baris satu</p><p>Baris dua</p>', html=False)
+        # Caption only shows together with a photo
+        self.assertNotContains(r, 'Gedung gereja lama')

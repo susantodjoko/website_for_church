@@ -25,6 +25,10 @@
       {{ warta.title }}
     </h1>
 
+    {% if video_id %}
+      {% include 'website/_video_embed.html' with video_title=warta.title %}
+    {% endif %}
+
     {% if warta.content %}
       <div class="rich-content" style="line-height: 1.9; color: var(--color-text);">
         {{ warta.content|clean_html }}

@@ -22,6 +22,9 @@
     <div class="prose-text ministry-detail__text">
       {{ ministry.description|paragraphs }}
     </div>
+    {% if video_id %}
+      {% include 'website/_video_embed.html' with video_title=ministry.name %}
+    {% endif %}
     <div class="ministry-detail__actions">
       <a href="{% url 'website:ministry_list' %}" class="btn btn--outline">&larr; Semua Komisi</a>
     </div>

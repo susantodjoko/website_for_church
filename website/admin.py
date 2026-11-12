@@ -54,10 +54,11 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ['is_published', 'date']
 
 
-class AboutValueInline(admin.TabularInline):
+class AboutValueInline(admin.StackedInline):
+    """Sejarah: long text, so stacked (full-width) rather than a table row."""
     model = AboutValue
-    extra = 1
-    fields = ['title', 'body', 'order']
+    extra = 0
+    fields = ['title', 'body', 'image', 'image_caption', 'order']
 
 
 class PendetaInline(admin.StackedInline):

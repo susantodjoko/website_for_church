@@ -1,3 +1,4 @@
+import re
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
@@ -142,7 +143,10 @@ def ministry_list(request):
 
 def ministry_detail(request, pk):
     ministry = get_object_or_404(Ministry, pk=pk)
-    return render(request, 'website/ministry_detail.html', {'ministry': ministry})
+    return render(request, 'website/ministry_detail.html', {
+        'ministry': ministry,
+        'video_id': _extract_youtube_id(ministry.youtube_url),
+    })
 
 
 def about(request):
@@ -156,12 +160,16 @@ def visit(request):
 
 
 
+_YOUTUBE_ID_RE = re.compile(
+    r'(?:youtube(?:-nocookie)?\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/|v/)|youtu\.be/)'
+    r'([A-Za-z0-9_-]+)'
+)
+
+
 def _extract_youtube_id(url):
-    if 'youtube.com/watch?v=' in url:
-        return url.split('v=')[1].split('&')[0]
-    if 'youtu.be/' in url:
-        return url.split('youtu.be/')[1].split('?')[0]
-    return ''
+    """Return the video ID from any common YouTube URL, or ''."""
+    match = _YOUTUBE_ID_RE.search(url or '')
+    return match.group(1) if match else ''
 
 
 
@@ -199,7 +207,10 @@ def warta_list(request):
 
 def warta_detail(request, slug):
     warta = get_object_or_404(WartaJemaat, slug=slug)
-    return render(request, 'website/warta_detail.html', {'warta': warta})
+    return render(request, 'website/warta_detail.html', {
+        'warta': warta,
+        'video_id': _extract_youtube_id(warta.youtube_url),
+    })
 
 def gallery(request):
     albums = Album.objects.filter(is_published=True)
