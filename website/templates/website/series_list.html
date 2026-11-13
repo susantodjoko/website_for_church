@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load safe_html %}
 {% block title %}Seri Khotbah — GKJ Salatiga{% endblock %}
 {% block meta_description %}Seri khotbah GKJ Salatiga.{% endblock %}
 {% block og_description %}Seri khotbah GKJ Salatiga.{% endblock %}
@@ -23,7 +24,7 @@
         <div class="card__body">
           <h3 class="card__title">{{ s.name }}</h3>
           <p class="card__meta">{{ s.sermon_set.count }} sermons</p>
-          <p class="card__text">{{ s.description|truncatewords:20 }}</p>
+          <p class="card__text">{{ s.description|plain_text|truncatewords:20 }}</p>
         </div>
       </a>
       {% empty %}

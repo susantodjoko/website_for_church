@@ -657,3 +657,37 @@ class AboutHistoryTest(TestCase):
         self.assertContains(r, '<p>Baris satu</p><p>Baris dua</p>', html=False)
         # Caption only shows together with a photo
         self.assertNotContains(r, 'Gedung gereja lama')
+
+
+class PreviewPlainTextTest(TestCase):
+    RICH = '<p>Ibadah&nbsp;Minggu&nbsp;pagi</p><p>Bersama&nbsp;&amp; penuh <b>sukacita</b></p>'
+
+    def _assert_clean(self, response):
+        body = response.content.decode()
+        self.assertNotIn('&amp;nbsp;', body)
+        self.assertNotIn('&nbsp;Minggu', body)
+        self.assertNotIn('&lt;b&gt;', body)
+        self.assertIn('Ibadah Minggu pagi Bersama &amp; penuh sukacita', body)
+
+    def test_warta_list_and_home_previews(self):
+        w = WartaJemaat.objects.create(
+            title='Berita Bersih', date=date.today(), category='berita', content=self.RICH,
+        )
+        self._assert_clean(self.client.get(reverse('website:warta_list')))
+        self._assert_clean(self.client.get(reverse('website:home')))
+        r = self.client.get(reverse('website:warta_detail', kwargs={'slug': w.slug}))
+        self.assertContains(r, 'name="description" content="Ibadah Minggu pagi Bersama &amp; penuh sukacita"')
+
+    def test_sermon_list_preview(self):
+        Sermon.objects.create(
+            title='Khotbah Bersih', pastor='P', date=date.today(),
+            description=self.RICH, youtube_url='', thumbnail='sermons/t.jpg',
+        )
+        self._assert_clean(self.client.get(reverse('website:sermon_list')))
+
+    def test_event_list_preview(self):
+        Event.objects.create(
+            title='Acara Bersih', date=date.today() + timedelta(days=3), time='08:00',
+            location='Gereja', description=self.RICH,
+        )
+        self._assert_clean(self.client.get(reverse('website:event_list')))

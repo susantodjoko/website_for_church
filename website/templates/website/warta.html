@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load safe_html %}
 {% block title %}Publikasi — GKJ Salatiga{% endblock %}
 {% block meta_description %}Warta jemaat, tata ibadah, berita, dan bahan dari GKJ Salatiga.{% endblock %}
 {% block og_description %}Warta jemaat, tata ibadah, berita, dan bahan dari GKJ Salatiga.{% endblock %}
@@ -41,7 +42,7 @@
           <h3 class="card__title">{{ item.title }}</h3>
           <p class="card__meta">{{ item.date }}</p>
           {% if item.content %}
-            <p class="card__text">{{ item.content|striptags|truncatewords:25 }}</p>
+            <p class="card__text">{{ item.content|plain_text|truncatewords:25 }}</p>
           {% endif %}
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
             <a href="{% url 'website:warta_detail' item.slug %}" class="btn btn--secondary">Baca Selengkapnya</a>

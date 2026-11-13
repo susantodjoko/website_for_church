@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load safe_html %}
 {% block title %}Kegiatan — GKJ Salatiga{% endblock %}
 {% block meta_description %}Kegiatan dan acara jemaat GKJ Salatiga.{% endblock %}
 {% block og_description %}Kegiatan dan acara jemaat GKJ Salatiga.{% endblock %}
@@ -27,7 +28,7 @@
             <a href="https://maps.google.com/?q={{ event.location|urlencode }}"
                target="_blank" rel="noopener">{{ event.location }}</a>
           </p>
-          <p class="card__text">{{ event.description }}</p>
+          <p class="card__text">{{ event.description|plain_text }}</p>
           {% if event.registration_url %}
             <a href="{{ event.registration_url }}" class="btn btn--primary" target="_blank">Register</a>
           {% endif %}
